@@ -11,17 +11,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/userCard")
 public class UserCardController {
-    @Autowired
+
     private final UserCardService userCardService;
 
     public UserCardController(UserCardService userCardService) {
         this.userCardService = userCardService;
-    }
-
-    @PostMapping
-    public ResponseEntity<String> addUserCard(@RequestBody UserCard userCard) {
-        userCardService.addCard(userCard);
-        return ResponseEntity.ok("User Card Added");
     }
 
     @GetMapping
@@ -29,4 +23,33 @@ public class UserCardController {
         return ResponseEntity.ok(userCardService.fetchCards());
     }
 
+    @PostMapping
+    public ResponseEntity<String> addUserCard(@RequestBody UserCard userCard) {
+        try {
+            userCardService.addCard(userCard);
+            return ResponseEntity.ok("User Card Added");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateUserCard(@PathVariable Long id, @RequestBody UserCard newUserCard) {
+        try {
+            userCardService.updateCard(id, newUserCard);
+            return ResponseEntity.ok("User Card Updated");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUserCard(@PathVariable Long id) {
+        try {
+            userCardService.deleteCardById(id);
+            return ResponseEntity.ok("User Card Deleted");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

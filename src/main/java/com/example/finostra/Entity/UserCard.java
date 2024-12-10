@@ -11,27 +11,21 @@ import java.time.LocalDate;
 
 @Entity
 public class UserCard {
-    // ID
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Card Number
-
     private String cardNumber;
 
-    // Card Type
-    private String cardType;
+    @Enumerated(EnumType.STRING) // Persist the enum as a String in the database
+    private CardType cardType; // Use CardType enum
 
-    // Expiration Date
     private LocalDate expirationDate;
 
-    // Owner name
     private String ownerName;
 
-    // Is active
-    private boolean isActive;
-
+    private boolean active;
 
     // Getters and Setters
     public Long getId() {
@@ -50,11 +44,11 @@ public class UserCard {
         this.cardNumber = cardNumber;
     }
 
-    public String getCardType() {
+    public CardType getCardType() {
         return cardType;
     }
 
-    public void setCardType(String cardType) {
+    public void setCardType(CardType cardType) {
         this.cardType = cardType;
     }
 
@@ -75,19 +69,12 @@ public class UserCard {
     }
 
     public boolean isActive() {
-        return isActive;
+        return active;
     }
 
     public void setActive(boolean active) {
-        isActive = active;
+        this.active = active;
     }
-
-
-    // Future update, connect card with user table
-//    @ManyToOne
-//    @JoinColumn(name = "user_id", nullable = false)
-//    private User user;
-
 }
 
 
