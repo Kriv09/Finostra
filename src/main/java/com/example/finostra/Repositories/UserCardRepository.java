@@ -1,6 +1,6 @@
-package Repositories;
+package com.example.finostra.Repositories;
 
-import Entity.UserCard;
+import com.example.finostra.Entity.UserCard;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserCardRepository extends JpaRepository<UserCard, Long> {

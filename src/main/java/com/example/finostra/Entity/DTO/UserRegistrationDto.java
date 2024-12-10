@@ -1,4 +1,4 @@
-package Entity.DTO;
+package com.example.finostra.Entity.DTO;
 
 public class UserRegistrationDto {
     private String username;

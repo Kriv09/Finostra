@@ -1,4 +1,4 @@
-package Entity.Roles;
+package com.example.finostra.Entity.Roles;
 
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;

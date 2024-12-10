@@ -1,9 +1,8 @@
-package Controllers;
+package com.example.finostra.Controllers;
 
 
-import Entity.DTO.UserRegistrationDto;
-import Services.CustomUserDetailsService;
-import Services.UserService;
+import com.example.finostra.Entity.DTO.UserRegistrationDto;
+import com.example.finostra.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

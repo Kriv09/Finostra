@@ -1,7 +1,7 @@
-package Services;
+package com.example.finostra.Services;
 
-import Entity.User;
-import Repositories.UserRepository;
+import com.example.finostra.Entity.User;
+import com.example.finostra.Repositories.UserRepository;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;

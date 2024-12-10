@@ -1,8 +1,10 @@
-package Services;
+package com.example.finostra.Services;
 
-import Entity.UserCard;
-import Repositories.UserCardRepository;
+import com.example.finostra.Entity.UserCard;
+import com.example.finostra.Repositories.UserCardRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserCardService {
@@ -15,6 +17,10 @@ public class UserCardService {
         this.userCardRepository = userCardRepository;
     }
 
+    // FETCH CARDS
+    public List<UserCard> fetchCards() {
+        return userCardRepository.findAll();
+    }
 
     // USER CARD ADDING
     public UserCard addCard(UserCard userCard) {

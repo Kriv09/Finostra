@@ -1,4 +1,4 @@
-package Entity;
+package com.example.finostra.Entity;
 
 import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
