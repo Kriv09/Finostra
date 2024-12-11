@@ -1,10 +1,10 @@
-package Services;
+package com.example.finostra.Services;
 
-import Entity.DTO.UserRegistrationDto;
-import Entity.Roles.Role;
-import Entity.User;
-import Repositories.RoleRepository;
-import Repositories.UserRepository;
+import com.example.finostra.Entity.DTO.UserRegistrationDto;
+import com.example.finostra.Entity.Roles.Role;
+import com.example.finostra.Entity.User;
+import com.example.finostra.Repositories.RoleRepository;
+import com.example.finostra.Repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
