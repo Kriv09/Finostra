@@ -1,7 +1,10 @@
 package com.example.finostra.Services;
 
+import com.example.finostra.Entity.DTO.CardToUserDto;
 import com.example.finostra.Entity.UserCard;
+import com.example.finostra.Entity.User;
 import com.example.finostra.Repositories.UserCardRepository;
+import com.example.finostra.Repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +14,13 @@ import java.util.Optional;
 @Service
 public class UserCardService {
 
+    private final UserRepository userRepository;
+
     private final UserCardRepository userCardRepository;
 
-    public UserCardService(UserCardRepository userCardRepository) {
+    public UserCardService(UserCardRepository userCardRepository, UserRepository userRepository) {
         this.userCardRepository = userCardRepository;
+        this.userRepository = userRepository;
     }
 
     // Checking all card's rows
@@ -23,6 +29,37 @@ public class UserCardService {
                 userCard.getExpirationDate() == null || userCard.getOwnerName() == null) {
             throw new IllegalArgumentException("Required fields are missing for the card");
         }
+    }
+
+    // Assign userCard to user
+    public void assignCardToUser(CardToUserDto cardToUserDto) {
+
+        Optional<User> user = userRepository.findById(cardToUserDto.getUserId());
+        if(user.isEmpty()) {
+            throw new EntityNotFoundException("User not found with id " + cardToUserDto.getUserId());
+        }
+
+        UserCard userCard = new UserCard();
+        userCard.setCardNumber(cardToUserDto.getCardNumber());
+        userCard.setCardType(cardToUserDto.getCardType());
+        userCard.setExpirationDate(cardToUserDto.getExpirationDate());
+        userCard.setOwnerName(cardToUserDto.getOwnerName());
+        userCard.setActive(true);
+        userCard.setUser(user.get());
+
+        validateCard(userCard);
+
+        userCardRepository.save(userCard);
+
+    }
+
+    // Fetch cards by user id
+    public List<UserCard> fetchCardsByUserId(Long userId) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
+            throw new EntityNotFoundException("User not found with id " + userId);
+        }
+        return userCardRepository.findByUser(user.get());
     }
 
     // Get all cards

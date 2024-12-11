@@ -27,10 +27,12 @@ public class UserCard {
 
     private boolean active;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     // Getters and Setters
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 
     public void setId(Long id) {
         this.id = id;
@@ -75,6 +77,9 @@ public class UserCard {
     public void setActive(boolean active) {
         this.active = active;
     }
+
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 }
 
 

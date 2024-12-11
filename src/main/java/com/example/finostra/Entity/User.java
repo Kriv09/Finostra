@@ -61,6 +61,16 @@ public class User implements UserDetails {
     )
     private Set<Role> roles = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private Set<UserCard> userCards = new HashSet<>();
+
+    public Set<UserCard> getUserCards() {
+        return userCards;
+    }
+    public void setUserCards(Set<UserCard> userCards) {
+        this.userCards = userCards;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
