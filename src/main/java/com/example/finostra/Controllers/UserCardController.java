@@ -2,7 +2,9 @@ package com.example.finostra.Controllers;
 
 import com.example.finostra.Entity.UserCard;
 import com.example.finostra.Services.UserCardService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +25,15 @@ public class UserCardController {
         return ResponseEntity.ok(userCardService.fetchCards());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<UserCard> getUserCard(@PathVariable long id) {
+        try {
+            return ResponseEntity.ok(userCardService.fetchCardById(id));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
     @PostMapping
     public ResponseEntity<String> addUserCard(@RequestBody UserCard userCard) {
         try {
@@ -40,6 +51,8 @@ public class UserCardController {
             return ResponseEntity.ok("User Card Updated");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
@@ -50,6 +63,8 @@ public class UserCardController {
             return ResponseEntity.ok("User Card Deleted");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 }

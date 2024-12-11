@@ -2,6 +2,7 @@ package com.example.finostra.Services;
 
 import com.example.finostra.Entity.UserCard;
 import com.example.finostra.Repositories.UserCardRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class UserCardService {
         this.userCardRepository = userCardRepository;
     }
 
-    // Checking all rows
+    // Checking all card's rows
     private void validateCard(UserCard userCard) {
         if (userCard.getCardNumber() == null || userCard.getCardType() == null ||
                 userCard.getExpirationDate() == null || userCard.getOwnerName() == null) {
@@ -27,6 +28,15 @@ public class UserCardService {
     // Get all cards
     public List<UserCard> fetchCards() {
         return userCardRepository.findAll();
+    }
+
+    // Get card
+    public UserCard fetchCardById(Long id) {
+        Optional<UserCard> userCard = userCardRepository.findById(id);
+        if (userCard.isEmpty()) {
+            throw new EntityNotFoundException("Card not found");
+        }
+        return userCard.get();
     }
 
     // Add card
@@ -47,7 +57,7 @@ public class UserCardService {
 
         Optional<UserCard> isUserCard = userCardRepository.findById(id);
         if (isUserCard.isEmpty()) {
-            throw new IllegalArgumentException("Card not found");
+            throw new EntityNotFoundException("Card not found");
         }
 
         UserCard userCard = isUserCard.get();
@@ -64,7 +74,7 @@ public class UserCardService {
     public void deleteCardById(Long id) {
         Optional<UserCard> isUserCard = userCardRepository.findById(id);
         if (isUserCard.isEmpty()) {
-            throw new IllegalArgumentException("Card not found");
+            throw new EntityNotFoundException("Card not found");
         }
         userCardRepository.delete(isUserCard.get());
     }
