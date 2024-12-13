@@ -35,6 +35,15 @@ public class UserCardController {
         }
     }
 
+    @GetMapping("/user_{id}")
+    public ResponseEntity<List<UserCard>> getUserCardsByUserId(@PathVariable long id) {
+        try{
+            return ResponseEntity.ok(userCardService.fetchCardsByUserId(id));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
     @PostMapping("/assign")
     public  ResponseEntity<String> assignCardToUser(@RequestBody CardToUserDto cardToUserDto) {
         try {

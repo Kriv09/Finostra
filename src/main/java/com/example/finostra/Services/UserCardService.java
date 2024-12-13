@@ -38,6 +38,9 @@ public class UserCardService {
         if(user.isEmpty()) {
             throw new EntityNotFoundException("User not found with id " + cardToUserDto.getUserId());
         }
+        if (userCardRepository.findByCardNumber(cardToUserDto.getCardNumber()) != null) {
+            throw new IllegalArgumentException("Card number already exists");
+        }
 
         UserCard userCard = new UserCard();
         userCard.setCardNumber(cardToUserDto.getCardNumber());
@@ -102,7 +105,7 @@ public class UserCardService {
         userCard.setCardType(newUserCard.getCardType());
         userCard.setExpirationDate(newUserCard.getExpirationDate());
         userCard.setOwnerName(newUserCard.getOwnerName());
-        userCard.setActive(newUserCard.isActive());
+        userCard.setActive(newUserCard.getActive());
 
         return userCardRepository.save(userCard);
     }
