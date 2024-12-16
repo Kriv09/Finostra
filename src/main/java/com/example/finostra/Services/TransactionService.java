@@ -1,7 +1,9 @@
 package com.example.finostra.Services;
 
 import com.example.finostra.Entity.Transaction;
+import com.example.finostra.Entity.UserCard;
 import com.example.finostra.Repositories.TransactionRepository;
+import com.example.finostra.Repositories.UserCardRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import com.example.finostra.Entity.DTO.TransactionDTO;
@@ -13,9 +15,11 @@ import java.util.Optional;
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
+    private final UserCardRepository userCardRepository;
 
-    public TransactionService(TransactionRepository transactionRepository) {
+    public TransactionService(TransactionRepository transactionRepository, UserCardRepository userCardRepository) {
         this.transactionRepository = transactionRepository;
+        this.userCardRepository = userCardRepository;
     }
 
     private void validateTransaction(Transaction transaction) {
@@ -43,8 +47,15 @@ public class TransactionService {
 
     // add transaction
     public Transaction addTransaction(TransactionDTO transactionDto) {
+
+        Optional<UserCard> userCard = userCardRepository.findById(transactionDto.getUserCardId());
+        if(userCard.isEmpty()) {
+            throw new EntityNotFoundException("User card not found");
+        }
+
         Transaction transaction = new Transaction();
 
+        transaction.setUserCard(userCard.get());
         transaction.setTransactionDate(transactionDto.getTransactionDate());
         transaction.setAmount(transactionDto.getAmount());
         transaction.setDescription(transactionDto.getDescription());

@@ -6,13 +6,13 @@ import java.time.LocalDateTime;
 
 public class TransactionDTO {
 
-    private int userCardId;
+    private Long userCardId;
     private Double amount;
     private LocalDateTime transactionDate;
     private String description;
     private TransactionType transactionType;
 
-    public TransactionDTO(int userCardId, Double amount,
+    public TransactionDTO(Long userCardId, Double amount,
                           LocalDateTime transactionDate, String description,
                           TransactionType transactionType) {
         this.userCardId = userCardId;
@@ -23,11 +23,11 @@ public class TransactionDTO {
     }
 
     // Getters and Setters
-    public int getUserCardId() {
+    public Long getUserCardId() {
         return userCardId;
     }
 
-    public void setUserCardId(int userCardId) {
+    public void setUserCardId(Long userCardId) {
         this.userCardId = userCardId;
     }
 
