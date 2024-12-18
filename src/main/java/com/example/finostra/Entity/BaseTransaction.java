@@ -5,7 +5,9 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-public class Transaction {
+@Table(name="transaction")
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class BaseTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,7 +24,6 @@ public class Transaction {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_card_id", nullable = false)
     private UserCard userCard;
-
 
     // Getters and Setters
     public Long getId() {
