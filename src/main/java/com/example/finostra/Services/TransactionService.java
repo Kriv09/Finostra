@@ -33,7 +33,7 @@ public class TransactionService {
     // Create TransactionSingle
     private TransactionSingle createTransactionSingle(TransactionDTO transactionDTO, UserCard userCard) {
         if(transactionDTO.getOperationPlace() == null) {
-            throw new IllegalArgumentException("Required fields are missing for the transaction");
+            throw new IllegalArgumentException("Required field operation place are missing for the transaction");
         }
 
         TransactionSingle transactionSingle = new TransactionSingle();
@@ -53,7 +53,7 @@ public class TransactionService {
     // Create TransactionDouble
     private TransactionDouble createTransactionDouble(TransactionDTO transactionDTO, UserCard userCard) {
         if(transactionDTO.getReceiverUserCardNumber() == null) {
-            throw new IllegalArgumentException("Required fields are missing for the transaction");
+            throw new IllegalArgumentException("Required field card number are missing for the transaction");
         }
 
         UserCard receiver = userCardRepository.findByCardNumber(transactionDTO.getReceiverUserCardNumber());
@@ -114,6 +114,58 @@ public class TransactionService {
 
         return baseTransactionRepository.save(baseTransaction);
     }
+
+    // delete transaction
+    public void deleteTransactionById(Long id) {
+        if(id == null) {
+            throw new IllegalArgumentException("Required field ID are missing for the transaction");
+        }
+        Optional<BaseTransaction> transaction = baseTransactionRepository.findById(id);
+        if(transaction.isEmpty()) {
+            throw new EntityNotFoundException("Transaction not found");
+        }
+        baseTransactionRepository.delete(transaction.get());
+    }
+
+    // update transaction
+    public BaseTransaction updateTransaction(Long id, TransactionDTO transactionDTO) {
+        if (id == null) {
+            throw new IllegalArgumentException("Required field ID is missing for the transaction");
+        } else if (transactionDTO == null) {
+            throw new IllegalArgumentException("Required field transaction data is missing for the transaction");
+        }
+
+        Optional<BaseTransaction> isTransaction = baseTransactionRepository.findById(id);
+        if (isTransaction.isEmpty()) {
+            throw new EntityNotFoundException("Transaction not found");
+        }
+        BaseTransaction baseTransaction = isTransaction.get();
+
+        if (transactionDTO.getTransactionType() != baseTransaction.getTransactionType()) {
+            throw new IllegalArgumentException("Transaction type mismatch");
+        }
+
+        baseTransaction.setTransactionDate(transactionDTO.getTransactionDate());
+        baseTransaction.setAmount(transactionDTO.getAmount());
+        baseTransaction.setDescription(transactionDTO.getDescription());
+
+        if (baseTransaction instanceof TransactionSingle transactionSingle) {
+            transactionSingle.setOperationPlace(transactionDTO.getOperationPlace());
+        } else if (baseTransaction instanceof TransactionDouble transactionDouble) {
+            if (transactionDTO.getReceiverUserCardNumber() != null) {
+                UserCard receiver = userCardRepository.findByCardNumber(transactionDTO.getReceiverUserCardNumber());
+                if (receiver == null) {
+                    throw new EntityNotFoundException("Receiver user card not found");
+                }
+                transactionDouble.setReceiverUserCardNumber(receiver.getCardNumber());
+            }
+        }
+
+        validateTransaction(baseTransaction);
+
+        return baseTransactionRepository.save(baseTransaction);
+    }
+
 
 
 

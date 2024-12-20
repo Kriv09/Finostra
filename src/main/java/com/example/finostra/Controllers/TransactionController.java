@@ -39,7 +39,7 @@ public class TransactionController {
     @PostMapping
     public ResponseEntity<String> addTransaction(@RequestBody TransactionDTO transactionDto) {
         try {
-            BaseTransaction savedTransaction = transactionService.addTransaction(transactionDto);
+            transactionService.addTransaction(transactionDto);
             return ResponseEntity.ok("Transaction added successfully");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -47,4 +47,29 @@ public class TransactionController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateTransaction(@PathVariable Long id, @RequestBody TransactionDTO transactionDto) {
+        try {
+            transactionService.updateTransaction(id, transactionDto);
+            return ResponseEntity.ok("Transaction updated successfully");
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteTransaction(@PathVariable Long id) {
+        try {
+            transactionService.deleteTransactionById(id);
+            return ResponseEntity.ok("Transaction deleted successfully");
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 }
