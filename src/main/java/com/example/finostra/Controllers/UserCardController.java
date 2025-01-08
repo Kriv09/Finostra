@@ -26,7 +26,7 @@ public class UserCardController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserCard> getUserCard(@PathVariable long id) {
+    public ResponseEntity<UserCard> getUserCard(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(userCardService.fetchCardById(id));
         } catch (EntityNotFoundException e) {
