@@ -1,6 +1,8 @@
 package com.example.finostra.Entity;
 
 import com.example.finostra.Entity.Roles.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -60,6 +62,17 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @JsonIgnore
+    private Set<UserCard> userCards = new HashSet<>();
+
+    public Set<UserCard> getUserCards() {
+        return userCards;
+    }
+    public void setUserCards(Set<UserCard> userCards) {
+        this.userCards = userCards;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

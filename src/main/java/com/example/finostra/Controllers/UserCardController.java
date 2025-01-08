@@ -1,5 +1,6 @@
 package com.example.finostra.Controllers;
 
+import com.example.finostra.Entity.DTO.CardToUserDto;
 import com.example.finostra.Entity.UserCard;
 import com.example.finostra.Services.UserCardService;
 import jakarta.persistence.EntityNotFoundException;
@@ -34,10 +35,29 @@ public class UserCardController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<String> addUserCard(@RequestBody UserCard userCard) {
+    @GetMapping("/user_{id}")
+    public ResponseEntity<List<UserCard>> getUserCardsByUserId(@PathVariable long id) {
+        try{
+            return ResponseEntity.ok(userCardService.fetchCardsByUserId(id));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    @PostMapping("/assign")
+    public  ResponseEntity<String> assignCardToUser(@RequestBody CardToUserDto cardToUserDto) {
         try {
-            userCardService.addCard(userCard);
+          userCardService.assignCardToUser(cardToUserDto);
+          return ResponseEntity.ok("Assigned card to user");
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<String> addUserCard(@RequestBody CardToUserDto userCard) {
+        try {
+            userCardService.assignCardToUser(userCard);
             return ResponseEntity.ok("User Card Added");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
