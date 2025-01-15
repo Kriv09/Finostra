@@ -4,6 +4,7 @@ import com.example.finostra.Entity.Transactions.BaseTransaction;
 import com.example.finostra.Entity.Transactions.TransactionDouble;
 import com.example.finostra.Entity.Transactions.TransactionSingle;
 import com.example.finostra.Entity.UserCards.UserCard;
+import com.example.finostra.Models.FinancialAnalyzer;
 import com.example.finostra.Repositories.BaseTransactionRepository;
 import com.example.finostra.Repositories.UserCardRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -184,6 +185,52 @@ public class TransactionService {
     }
 
 
+
+    // Analyze Finances
+    public FinancialAnalyzer fetchFinancialAnalysisForUserCard(Long userCardId) {
+        List<BaseTransaction> transactions = fetchTransactionsByUserCardId(userCardId);
+
+        if(transactions.isEmpty()) {
+            return new FinancialAnalyzer();
+        }
+
+        FinancialAnalyzer financialAnalyzer = new FinancialAnalyzer();
+
+        financialAnalyzer.setTrasactions(transactions);
+
+        financialAnalyzer.setTotalTransactions(transactions.size());
+
+        double currentBalance = 0, totalExpenses = 0, totalIncome = 0, averageExpenses = 0, averageIncome = 0;
+
+        for(BaseTransaction transaction : transactions) {
+            if(transaction instanceof TransactionSingle transactionSingle) {
+                switch (transaction.getTransactionType()) {
+                    case DEPOSIT:
+                        currentBalance += transactionSingle.getAmount();
+                        break;
+                    case WITHDRAW:
+                        currentBalance -= transactionSingle.getAmount();
+                        break;
+                }
+
+            } else if(transaction instanceof TransactionDouble transactionDouble) {
+                switch (transaction.getTransactionType()) {
+                    case TRANSFER, PAYMENT:
+                        if(( ((TransactionDouble) transaction).getReceiverUserCardNumber() )
+                                .equals(transaction.getUserCard().getCardNumber()) ) {
+                            currentBalance += transactionDouble.getAmount();
+                        } else {
+                            currentBalance -= transactionDouble.getAmount();
+                        }
+                        break;
+                }
+            }
+        }
+
+        financialAnalyzer.setCurrentBalance(currentBalance);
+
+        return financialAnalyzer;
+    }
 
 
 }
