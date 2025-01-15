@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Service
 public class UserCardService {
@@ -28,6 +29,9 @@ public class UserCardService {
         if (userCard.getCardNumber() == null || userCard.getCardType() == null ||
                 userCard.getExpirationDate() == null || userCard.getOwnerName() == null) {
             throw new IllegalArgumentException("Required fields are missing for the card");
+        }
+        if(!Pattern.matches("^\\d{16}$\n", userCard.getCardNumber())) {
+            throw new IllegalArgumentException("Card number is incorrect, must contain only numbers and have length of 16");
         }
     }
 
