@@ -1,4 +1,4 @@
-package com.example.finostra.Entity;
+package com.example.finostra.Entity.UserCards;
 
 public enum CardType {
     VISA,

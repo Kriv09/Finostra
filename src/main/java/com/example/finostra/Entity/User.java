@@ -1,8 +1,8 @@
 package com.example.finostra.Entity;
 
 import com.example.finostra.Entity.Roles.Role;
+import com.example.finostra.Entity.UserCards.UserCard;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

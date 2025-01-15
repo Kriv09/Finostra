@@ -1,10 +1,9 @@
 package com.example.finostra.Controllers;
 
 import com.example.finostra.Entity.DTO.CardToUserDto;
-import com.example.finostra.Entity.UserCard;
+import com.example.finostra.Entity.UserCards.UserCard;
 import com.example.finostra.Services.UserCardService;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

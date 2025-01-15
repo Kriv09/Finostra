@@ -1,6 +1,6 @@
 package com.example.finostra.Entity.DTO;
 
-import com.example.finostra.Entity.*;
+import com.example.finostra.Entity.Transactions.TransactionType;
 
 import java.time.LocalDateTime;
 

@@ -1,13 +1,10 @@
-package com.example.finostra.Entity;
+package com.example.finostra.Entity.UserCards;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.example.finostra.Entity.User;
 import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDate;
 

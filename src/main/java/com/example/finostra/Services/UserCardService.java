@@ -1,7 +1,7 @@
 package com.example.finostra.Services;
 
 import com.example.finostra.Entity.DTO.CardToUserDto;
-import com.example.finostra.Entity.UserCard;
+import com.example.finostra.Entity.UserCards.UserCard;
 import com.example.finostra.Entity.User;
 import com.example.finostra.Repositories.UserCardRepository;
 import com.example.finostra.Repositories.UserRepository;

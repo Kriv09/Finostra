@@ -1,5 +1,6 @@
-package com.example.finostra.Entity;
+package com.example.finostra.Entity.Transactions;
 
+import com.example.finostra.Entity.UserCards.UserCard;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

@@ -1,6 +1,9 @@
 package com.example.finostra.Services;
 
-import com.example.finostra.Entity.*;
+import com.example.finostra.Entity.Transactions.BaseTransaction;
+import com.example.finostra.Entity.Transactions.TransactionDouble;
+import com.example.finostra.Entity.Transactions.TransactionSingle;
+import com.example.finostra.Entity.UserCards.UserCard;
 import com.example.finostra.Repositories.BaseTransactionRepository;
 import com.example.finostra.Repositories.UserCardRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -87,6 +90,20 @@ public class TransactionService {
             throw new EntityNotFoundException("Transaction not found");
         }
         return transaction.get();
+    }
+
+    // get all transactions by userCard id
+    public List<BaseTransaction> fetchTransactionsByUserCardId(Long userCardId) {
+        if(userCardId == null) {
+            throw new IllegalArgumentException("Required field userCardId are missing for the transaction");
+        }
+
+        Optional<UserCard> isUserCard = userCardRepository.findById(userCardId);
+        if(isUserCard.isEmpty()) {
+            throw new EntityNotFoundException("User card not found");
+        }
+
+        return baseTransactionRepository.findBaseTransactionsByUserCard(isUserCard.get());
     }
 
     // add transaction
