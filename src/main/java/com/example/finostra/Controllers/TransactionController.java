@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/transaction")
@@ -22,25 +23,31 @@ public class TransactionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BaseTransaction>> getTransactions() {
-        List<BaseTransaction> transactions = transactionService.fetchTransactions();
+    public ResponseEntity<List<TransactionDTO>> getTransactions() {
+        List<TransactionDTO> transactions = transactionService.fetchTransactions()
+                .stream()
+                .map(transactionService::mapToDTO)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(transactions);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BaseTransaction> getTransaction(@PathVariable Long id) {
+    public ResponseEntity<TransactionDTO> getTransaction(@PathVariable Long id) {
         try {
             BaseTransaction transaction = transactionService.fetchTransactionById(id);
-            return ResponseEntity.ok(transaction);
+            return ResponseEntity.ok(transactionService.mapToDTO(transaction));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
     @GetMapping("/userCard_{id}")
-    public ResponseEntity<List<BaseTransaction>> getTransactionsByUserCardId(@PathVariable Long id) {
+    public ResponseEntity<List<TransactionDTO>> getTransactionsByUserCardId(@PathVariable Long id) {
         try {
-            List<BaseTransaction> transactions = transactionService.fetchTransactionsByUserCardId(id);
+            List<TransactionDTO> transactions = transactionService.fetchTransactionsByUserCardId(id)
+                    .stream()
+                    .map(transactionService::mapToDTO)
+                    .collect(Collectors.toList());
             return ResponseEntity.ok(transactions);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

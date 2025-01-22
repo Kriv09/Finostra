@@ -8,8 +8,6 @@ import java.util.List;
 
 public class FinancialAnalyzer {
 
-    private List<BaseTransaction> trasactions;
-
     private Integer totalTransactions;
 
     private Double currentBalance;
@@ -24,7 +22,6 @@ public class FinancialAnalyzer {
     private Double averageIncome;
 
     public FinancialAnalyzer() {
-        this.trasactions = new ArrayList<>();
         this.totalTransactions = 0;
         this.currentBalance = 0.0;
         this.startDateTime = LocalDateTime.now();
@@ -37,14 +34,6 @@ public class FinancialAnalyzer {
 
 
     // Getters and Setters
-
-    public List<BaseTransaction> getTrasactions() {
-        return trasactions;
-    }
-
-    public void setTrasactions(List<BaseTransaction> trasactions) {
-        this.trasactions = trasactions;
-    }
 
     public Integer getTotalTransactions() {
         return totalTransactions;
@@ -110,13 +99,4 @@ public class FinancialAnalyzer {
         this.averageIncome = averageIncome;
     }
 
-    public Double getDifference() {
-        return difference;
-    }
-
-    public void setDifference(Double difference) {
-        this.difference = difference;
-    }
-
-    private Double difference;
 }

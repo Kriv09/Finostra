@@ -27,9 +27,7 @@ public class TransactionDTO {
         this.userCardId = userCardId;
     }
 
-    public Double getAmount() {
-        return amount;
-    }
+    public Double getAmount() { return amount; }
 
     public void setAmount(Double amount) {
         this.amount = amount;
