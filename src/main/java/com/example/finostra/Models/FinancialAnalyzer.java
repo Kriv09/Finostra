@@ -1,16 +1,12 @@
 package com.example.finostra.Models;
 
-import com.example.finostra.Entity.Transactions.BaseTransaction;
-
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 public class FinancialAnalyzer {
 
     private Integer totalTransactions;
 
-    private Double currentBalance;
+    private Double balance;
 
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
@@ -23,9 +19,9 @@ public class FinancialAnalyzer {
 
     public FinancialAnalyzer() {
         this.totalTransactions = 0;
-        this.currentBalance = 0.0;
-        this.startDateTime = LocalDateTime.now();
-        this.endDateTime = LocalDateTime.now();
+        this.balance = 0.0;
+        this.startDateTime = null;
+        this.endDateTime = null;
         this.totalExpenses = 0.0;
         this.totalIncome = 0.0;
         this.averageExpenses = 0.0;
@@ -43,12 +39,12 @@ public class FinancialAnalyzer {
         this.totalTransactions = totalTransactions;
     }
 
-    public Double getCurrentBalance() {
-        return currentBalance;
+    public Double getBalance() {
+        return balance;
     }
 
-    public void setCurrentBalance(Double currentBalance) {
-        this.currentBalance = currentBalance;
+    public void setBalance(Double balance) {
+        this.balance = balance;
     }
 
     public LocalDateTime getStartDateTime() {

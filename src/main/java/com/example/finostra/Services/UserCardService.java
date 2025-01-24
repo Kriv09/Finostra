@@ -31,7 +31,8 @@ public class UserCardService {
      */
     private void validateCard(UserCard userCard) {
         if (userCard.getCardNumber() == null || userCard.getCardType() == null ||
-                userCard.getExpirationDate() == null || userCard.getOwnerName() == null) {
+                userCard.getExpirationDate() == null || userCard.getOwnerName() == null ||
+                userCard.getActive() == null) {
             throw new IllegalArgumentException("Required fields are missing for the card");
         }
         if (!Pattern.matches("^\\d{16}$", userCard.getCardNumber())) {

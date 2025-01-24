@@ -6,6 +6,8 @@ import java.time.LocalDateTime;
 
 public class TransactionDTO {
 
+    private Long id = null;
+
     private Long userCardId;
     private Double amount;
     private LocalDateTime transactionDate;
@@ -13,12 +15,19 @@ public class TransactionDTO {
     private TransactionType transactionType;
 
     // Transaction double row
+    private String senderUserCardNumber;
+
     private String receiverUserCardNumber;
 
     // Transaction single row
     private String operationPlace;
 
     // Getters and Setters
+
+    public Long getId() {return id;}
+
+    public void setId(Long id) {this.id = id;}
+
     public Long getUserCardId() {
         return userCardId;
     }
@@ -72,6 +81,15 @@ public class TransactionDTO {
     public void setReceiverUserCardNumber(String receiverUserCardNumber) {
         this.receiverUserCardNumber = receiverUserCardNumber;
     }
+
+    public String getSenderUserCardNumber() {
+        return senderUserCardNumber;
+    }
+
+    public void setSenderUserCardNumber(String senderUserCardNumber) {
+        this.senderUserCardNumber = senderUserCardNumber;
+    }
+
 
 
 }

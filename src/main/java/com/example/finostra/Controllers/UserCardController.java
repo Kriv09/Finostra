@@ -59,7 +59,7 @@ public class UserCardController {
             userCardService.assignCardToUser(userCard);
             return ResponseEntity.ok("User Card Added");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
@@ -69,7 +69,7 @@ public class UserCardController {
             userCardService.updateCard(id, newUserCard);
             return ResponseEntity.ok("User Card Updated");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
@@ -81,7 +81,7 @@ public class UserCardController {
             userCardService.deleteCardById(id);
             return ResponseEntity.ok("User Card Deleted");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }

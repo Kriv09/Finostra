@@ -7,8 +7,10 @@ import com.example.finostra.Services.TransactionService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,10 +58,12 @@ public class TransactionController {
         }
     }
 
-    @GetMapping("/analyze_userCard_{id}")
-    public ResponseEntity<FinancialAnalyzer> getFinancialAnalyzerForUser(@PathVariable Long id) {
+    @GetMapping("/analyse_userCard_{id}")
+    public ResponseEntity<FinancialAnalyzer> getFinancialAnalyzerForUser(@PathVariable Long id,
+                                                                         @RequestParam(required = false) LocalDateTime startDate,
+                                                                         @RequestParam(required = false) LocalDateTime endDate) {
         try {
-            FinancialAnalyzer financialAnalyzer = transactionService.fetchFinancialAnalysisForUserCard(id);
+            FinancialAnalyzer financialAnalyzer = transactionService.fetchFinancialAnalysisForUserCard(id, startDate, endDate);
             return ResponseEntity.ok(financialAnalyzer);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

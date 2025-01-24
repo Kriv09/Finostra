@@ -11,6 +11,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import com.example.finostra.Entity.DTO.TransactionDTO;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -100,6 +102,7 @@ public class TransactionService {
      */
     public TransactionDTO mapToDTO(BaseTransaction transaction) {
         TransactionDTO dto = new TransactionDTO();
+        dto.setId(transaction.getId());
         dto.setUserCardId(transaction.getUserCard().getId());
         dto.setAmount(transaction.getAmount());
         dto.setTransactionDate(transaction.getTransactionDate());
@@ -107,6 +110,7 @@ public class TransactionService {
         dto.setTransactionType(transaction.getTransactionType());
 
         if (transaction instanceof TransactionDouble transactionDouble) {
+            dto.setSenderUserCardNumber(transactionDouble.getSenderUserCardNumber());
             dto.setReceiverUserCardNumber(transactionDouble.getReceiverUserCardNumber());
         } else if (transaction instanceof TransactionSingle single) {
             dto.setOperationPlace(single.getOperationPlace());
@@ -237,6 +241,9 @@ public class TransactionService {
 
         if (baseTransaction instanceof TransactionSingle transactionSingle) {
             transactionSingle.setOperationPlace(transactionDTO.getOperationPlace());
+        } else if (baseTransaction instanceof TransactionDouble transactionDouble) {
+            transactionDouble.setReceiverUserCardNumber(transactionDTO.getReceiverUserCardNumber());
+            transactionDouble.setSenderUserCardNumber(transactionDTO.getSenderUserCardNumber());
         }
 
         validateTransaction(baseTransaction);
@@ -245,28 +252,38 @@ public class TransactionService {
     }
 
     /**
-     * Analyze financial data for user card
+     * Analyse finance for user card
      * @param userCardId ID of the user card
+     * @param startDate  the start of the date range for transactions (inclusive), can be null to include all earlier transactions
+     * @param endDate    the end of the date range for transactions (inclusive), can be null to include all later transactions
      * @return FinancialAnalyzer object containing analysis results
      */
-    public FinancialAnalyzer fetchFinancialAnalysisForUserCard(Long userCardId) {
-        List<BaseTransaction> transactions = fetchTransactionsByUserCardId(userCardId);
+    public FinancialAnalyzer fetchFinancialAnalysisForUserCard(Long userCardId, LocalDateTime startDate, LocalDateTime endDate) {
+        List<BaseTransaction> transactions = fetchTransactionsByUserCardId(userCardId).stream()
+                .filter(transaction -> {
+                    LocalDateTime transactionDate = transaction.getTransactionDate();
+                    return (startDate == null || !transactionDate.isBefore(startDate)) &&
+                            (endDate == null || !transactionDate.isAfter(endDate));
+                })
+                .sorted(Comparator.comparing(BaseTransaction :: getTransactionDate))
+                .toList();
+
         if(transactions.isEmpty()) {
             return new FinancialAnalyzer();
         }
 
-        double currentBalance = 0, totalExpenses = 0, totalIncome = 0, averageExpenses = 0, averageIncome = 0;
+        double balance = 0, totalExpenses = 0, totalIncome = 0, averageExpenses = 0, averageIncome = 0;
         int expenseCount = 0, incomeCount = 0;
 
         for(BaseTransaction transaction : transactions) {
             switch (transaction.getTransactionType()) {
                 case DEPOSIT:
-                    currentBalance += transaction.getAmount();
+                    balance += transaction.getAmount();
                     totalIncome += transaction.getAmount();
                     incomeCount++;
                     break;
                 case WITHDRAW, PAYMENT:
-                    currentBalance -= transaction.getAmount();
+                    balance -= transaction.getAmount();
                     totalExpenses += transaction.getAmount();
                     expenseCount++;
                     break;
@@ -276,11 +293,11 @@ public class TransactionService {
                     }
 
                     if(transactionDouble.getReceiverUserCardNumber().equals(transaction.getUserCard().getCardNumber()) ) {
-                        currentBalance += transactionDouble.getAmount();
+                        balance += transactionDouble.getAmount();
                         totalIncome += transactionDouble.getAmount();
                         incomeCount++;
                     } else {
-                        currentBalance -= transactionDouble.getAmount();
+                        balance -= transactionDouble.getAmount();
                         totalExpenses += transactionDouble.getAmount();
                         expenseCount++;
                     }
@@ -292,8 +309,10 @@ public class TransactionService {
         averageIncome = incomeCount == 0 ? 0 : totalIncome / incomeCount;
 
         FinancialAnalyzer financialAnalyzer = new FinancialAnalyzer();
+        financialAnalyzer.setStartDateTime(startDate);
+        financialAnalyzer.setEndDateTime(endDate);
         financialAnalyzer.setTotalTransactions(transactions.size());
-        financialAnalyzer.setCurrentBalance(currentBalance);
+        financialAnalyzer.setBalance(balance);
         financialAnalyzer.setTotalExpenses(totalExpenses);
         financialAnalyzer.setTotalIncome(totalIncome);
         financialAnalyzer.setAverageExpenses(averageExpenses);
