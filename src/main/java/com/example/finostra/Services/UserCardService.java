@@ -1,7 +1,7 @@
 package com.example.finostra.Services;
 
 import com.example.finostra.Entity.DTO.CardToUserDto;
-import com.example.finostra.Entity.UserCard;
+import com.example.finostra.Entity.UserCards.UserCard;
 import com.example.finostra.Entity.User;
 import com.example.finostra.Repositories.UserCardRepository;
 import com.example.finostra.Repositories.UserRepository;
@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Service
 public class UserCardService {
@@ -23,20 +24,43 @@ public class UserCardService {
         this.userRepository = userRepository;
     }
 
-    // Checking all card's rows
+    /**
+     * Validate the card's fields and ensure their correctness.
+     * @param userCard the card to validate
+     * @throws IllegalArgumentException if any field is missing or invalid
+     */
     private void validateCard(UserCard userCard) {
-        if (userCard.getCardNumber() == null || userCard.getCardType() == null ||
-                userCard.getExpirationDate() == null || userCard.getOwnerName() == null) {
-            throw new IllegalArgumentException("Required fields are missing for the card");
+        if (userCard.getCardNumber() == null) {
+            throw new IllegalArgumentException("Card number is required");
+        }
+        if (userCard.getCardType() == null) {
+            throw new IllegalArgumentException("Card type is required");
+        }
+        if (userCard.getExpirationDate() == null) {
+            throw new IllegalArgumentException("Expiration date is required");
+        }
+        if (userCard.getOwnerName() == null) {
+            throw new IllegalArgumentException("Owner name is required");
+        }
+        if (userCard.getActive() == null) {
+            throw new IllegalArgumentException("Card active status is required");
+        }
+        if (!Pattern.matches("^\\d{16}$", userCard.getCardNumber())) {
+            throw new IllegalArgumentException("Card number is incorrect, must contain only numbers and have a length of 16");
         }
     }
 
-    // Assign userCard to user
+    /**
+     * Assign a user card to a user.
+     * @param cardToUserDto contains the user ID and card details
+     * @throws EntityNotFoundException if the user is not found
+     * @throws IllegalArgumentException if the card number already exists
+     */
     public void assignCardToUser(CardToUserDto cardToUserDto) {
 
         Optional<User> user = userRepository.findById(cardToUserDto.getUserId());
-        if(user.isEmpty()) {
-            throw new EntityNotFoundException("User not found with id " + cardToUserDto.getUserId());
+        if (user.isEmpty()) {
+            throw new EntityNotFoundException("User is not found with id " + cardToUserDto.getUserId());
         }
         if (userCardRepository.findByCardNumber(cardToUserDto.getCardNumber()) != null) {
             throw new IllegalArgumentException("Card number already exists");
@@ -56,30 +80,48 @@ public class UserCardService {
 
     }
 
-    // Fetch cards by user id
+    /**
+     * Fetch all cards associated with a specific user.
+     * @param userId the ID of the user
+     * @return a list of user cards
+     * @throws EntityNotFoundException if the user is not found
+     */
     public List<UserCard> fetchCardsByUserId(Long userId) {
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()) {
-            throw new EntityNotFoundException("User not found with id " + userId);
+            throw new EntityNotFoundException("User is not found with id " + userId);
         }
         return userCardRepository.findByUser(user.get());
     }
 
-    // Get all cards
+    /**
+     * Fetch all user cards.
+     * @return a list of all user cards
+     */
     public List<UserCard> fetchCards() {
         return userCardRepository.findAll();
     }
 
-    // Get card
+    /**
+     * Fetch a specific card by its ID.
+     * @param id the ID of the card
+     * @return the user card
+     * @throws EntityNotFoundException if the card is not found
+     */
     public UserCard fetchCardById(Long id) {
         Optional<UserCard> userCard = userCardRepository.findById(id);
         if (userCard.isEmpty()) {
-            throw new EntityNotFoundException("Card not found");
+            throw new EntityNotFoundException("Card is not found");
         }
         return userCard.get();
     }
 
-    // Add card
+    /**
+     * Add a new card to the database.
+     * @param userCard the card to add
+     * @return the saved user card
+     * @throws IllegalArgumentException if the card number already exists
+     */
     public UserCard addCard(UserCard userCard) {
         if (userCardRepository.findByCardNumber(userCard.getCardNumber()) != null) {
             throw new IllegalArgumentException("Card number already exists");
@@ -88,7 +130,14 @@ public class UserCardService {
         return userCardRepository.save(userCard);
     }
 
-    // Update card
+    /**
+     * Update an existing card.
+     * @param id the ID of the card to update
+     * @param newUserCard the new card details
+     * @return the updated user card
+     * @throws IllegalArgumentException if the card ID is null
+     * @throws EntityNotFoundException if the card is not found
+     */
     public UserCard updateCard(Long id, UserCard newUserCard) {
         if (id == null) {
             throw new IllegalArgumentException("Card id is null");
@@ -97,7 +146,7 @@ public class UserCardService {
 
         Optional<UserCard> isUserCard = userCardRepository.findById(id);
         if (isUserCard.isEmpty()) {
-            throw new EntityNotFoundException("Card not found");
+            throw new EntityNotFoundException("Card is not found");
         }
 
         UserCard userCard = isUserCard.get();
@@ -110,11 +159,15 @@ public class UserCardService {
         return userCardRepository.save(userCard);
     }
 
-    // delete card
+    /**
+     * Delete a card by its ID.
+     * @param id the ID of the card to delete
+     * @throws EntityNotFoundException if the card is not found
+     */
     public void deleteCardById(Long id) {
         Optional<UserCard> isUserCard = userCardRepository.findById(id);
         if (isUserCard.isEmpty()) {
-            throw new EntityNotFoundException("Card not found");
+            throw new EntityNotFoundException("Card is not found");
         }
         userCardRepository.delete(isUserCard.get());
     }

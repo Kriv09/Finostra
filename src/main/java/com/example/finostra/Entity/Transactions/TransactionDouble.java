@@ -1,9 +1,6 @@
-package com.example.finostra.Entity;
+package com.example.finostra.Entity.Transactions;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 
 @Entity
 public class TransactionDouble extends BaseTransaction{

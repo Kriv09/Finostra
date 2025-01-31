@@ -1,12 +1,18 @@
 package com.example.finostra.Services;
 
-import com.example.finostra.Entity.*;
+import com.example.finostra.Entity.Transactions.BaseTransaction;
+import com.example.finostra.Entity.Transactions.TransactionDouble;
+import com.example.finostra.Entity.Transactions.TransactionSingle;
+import com.example.finostra.Entity.UserCards.UserCard;
+import com.example.finostra.Entity.FinancialAnalyzer;
 import com.example.finostra.Repositories.BaseTransactionRepository;
 import com.example.finostra.Repositories.UserCardRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import com.example.finostra.Entity.DTO.TransactionDTO;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,17 +26,36 @@ public class TransactionService {
         this.baseTransactionRepository = baseTransactionRepository;
     }
 
-    // Validate transaction
+    /**
+     * Validate Transaction, whether its values are null
+     * @param transaction object transaction
+     * @throws IllegalArgumentException if some values is null
+     */
     private void validateTransaction(BaseTransaction transaction) {
-        if (transaction.getTransactionDate() == null ||
-                transaction.getAmount() == null ||
-                transaction.getDescription() == null ||
-                transaction.getTransactionType() == null) {
-            throw new IllegalArgumentException("Required fields are missing for the transaction");
+        if (transaction.getTransactionDate() == null) {
+            throw new IllegalArgumentException("Transaction date is required");
         }
+        if (transaction.getAmount() == null) {
+            throw new IllegalArgumentException("Transaction amount is required");
+        }
+        if (transaction.getDescription() == null) {
+            throw new IllegalArgumentException("Transaction description is required");
+        }
+        if (transaction.getTransactionType() == null) {
+            throw new IllegalArgumentException("Transaction type is required");
+        }
+        if (transaction.getCategory() == null) {
+            throw new IllegalArgumentException("Transaction category is required");
+        }
+
     }
 
-    // Create TransactionSingle
+    /**
+     * Create object TransactionSingle
+     * @param transactionDTO Data Transfer Object containing transaction data
+     * @param userCard User card associated with the transaction
+     * @return TransactionSingle object with the initialized values
+     */
     private TransactionSingle createTransactionSingle(TransactionDTO transactionDTO, UserCard userCard) {
         if(transactionDTO.getOperationPlace() == null) {
             throw new IllegalArgumentException("Required field operation place are missing for the transaction");
@@ -42,6 +67,7 @@ public class TransactionService {
         transactionSingle.setAmount(transactionDTO.getAmount());
         transactionSingle.setDescription(transactionDTO.getDescription());
         transactionSingle.setTransactionType(transactionDTO.getTransactionType());
+        transactionSingle.setCategory(transactionDTO.getCategory());
         transactionSingle.setUserCard(userCard);
 
         transactionSingle.setOperationPlace(transactionDTO.getOperationPlace());
@@ -50,7 +76,12 @@ public class TransactionService {
 
     }
 
-    // Create TransactionDouble
+    /**
+     * Create object TransactionDouble
+     * @param transactionDTO Data Transfer Object containing transaction data
+     * @param userCard User card initiating the transaction
+     * @return TransactionDouble object with the initialized values
+     */
     private TransactionDouble createTransactionDouble(TransactionDTO transactionDTO, UserCard userCard) {
         if(transactionDTO.getReceiverUserCardNumber() == null) {
             throw new IllegalArgumentException("Required field card number are missing for the transaction");
@@ -58,7 +89,7 @@ public class TransactionService {
 
         UserCard receiver = userCardRepository.findByCardNumber(transactionDTO.getReceiverUserCardNumber());
         if(receiver == null) {
-            throw new EntityNotFoundException("User card not found");
+            throw new EntityNotFoundException("User card is not found");
         }
 
         TransactionDouble transactionDouble = new TransactionDouble();
@@ -67,6 +98,7 @@ public class TransactionService {
         transactionDouble.setAmount(transactionDTO.getAmount());
         transactionDouble.setDescription(transactionDTO.getDescription());
         transactionDouble.setTransactionType(transactionDTO.getTransactionType());
+        transactionDouble.setCategory(transactionDTO.getCategory());
         transactionDouble.setUserCard(userCard);
 
         transactionDouble.setSenderUserCardNumber(userCard.getCardNumber());
@@ -75,39 +107,73 @@ public class TransactionService {
         return transactionDouble;
     }
 
-    // get all transactions
+    /**
+     * Fetch all transactions from the repository
+     * @return List of BaseTransaction objects
+     */
     public List<BaseTransaction> fetchTransactions() {
         return baseTransactionRepository.findAll();
     }
 
-    // get by id
+    /**
+     * Fetch a transaction by its ID
+     * @param id Transaction ID
+     * @return BaseTransaction object
+     * @throws EntityNotFoundException if the transaction is not found
+     */
     public BaseTransaction fetchTransactionById(Long id) {
         Optional<BaseTransaction> transaction = baseTransactionRepository.findById(id);
-        if(transaction.isEmpty()) {
-            throw new EntityNotFoundException("Transaction not found");
+        if (transaction.isEmpty()) {
+            throw new EntityNotFoundException("Transaction is not found");
         }
         return transaction.get();
     }
 
-    // add transaction
+    /**
+     * Fetch all transactions for a specific user card
+     * @param userCardId ID of the user card
+     * @return List of BaseTransaction objects
+     * @throws IllegalArgumentException if userCardId is null
+     * @throws EntityNotFoundException if the user card is not found
+     */
+    public List<BaseTransaction> fetchTransactionsByUserCardId(Long userCardId) {
+        if (userCardId == null) {
+            throw new IllegalArgumentException("Required field userCardId is missing for the transaction");
+        }
+
+        Optional<UserCard> isUserCard = userCardRepository.findById(userCardId);
+        if (isUserCard.isEmpty()) {
+            throw new EntityNotFoundException("User card is not found");
+        }
+
+        return baseTransactionRepository.findBaseTransactionsByUserCard(isUserCard.get());
+    }
+
+    /**
+     * Add a new transaction
+     * @param transactionDTO Data Transfer Object containing transaction data
+     * @return Saved BaseTransaction object
+     * @throws EntityNotFoundException if the user card is not found
+     * @throws IllegalArgumentException if the transaction type is unsupported or some required fields are missing
+     */
     public BaseTransaction addTransaction(TransactionDTO transactionDTO) {
         Optional<UserCard> isUserCard = userCardRepository.findById(transactionDTO.getUserCardId());
-        if(isUserCard.isEmpty()) {
-            throw new EntityNotFoundException("User card not found");
+        if (isUserCard.isEmpty()) {
+            throw new EntityNotFoundException("User card is not found");
         }
         UserCard userCard = isUserCard.get();
 
         BaseTransaction baseTransaction;
 
         switch (transactionDTO.getTransactionType()) {
-            case DEPOSIT, WITHDRAW:
+            case DEPOSIT, WITHDRAW, PAYMENT:
                 baseTransaction = createTransactionSingle(transactionDTO, userCard);
                 break;
-            case TRANSFER, PAYMENT:
+            case TRANSFER:
                 baseTransaction = createTransactionDouble(transactionDTO, userCard);
                 break;
             default:
-                throw new IllegalArgumentException("Transaction type not supported");
+                throw new IllegalArgumentException("Transaction type is not supported");
         }
 
         validateTransaction(baseTransaction);
@@ -115,19 +181,31 @@ public class TransactionService {
         return baseTransactionRepository.save(baseTransaction);
     }
 
-    // delete transaction
+    /**
+     * Delete a transaction by its ID
+     * @param id Transaction ID
+     * @throws IllegalArgumentException if ID is null
+     * @throws EntityNotFoundException if the transaction is not found
+     */
     public void deleteTransactionById(Long id) {
-        if(id == null) {
-            throw new IllegalArgumentException("Required field ID are missing for the transaction");
+        if (id == null) {
+            throw new IllegalArgumentException("Required field ID is missing for the transaction");
         }
         Optional<BaseTransaction> transaction = baseTransactionRepository.findById(id);
-        if(transaction.isEmpty()) {
-            throw new EntityNotFoundException("Transaction not found");
+        if (transaction.isEmpty()) {
+            throw new EntityNotFoundException("Transaction is not found");
         }
         baseTransactionRepository.delete(transaction.get());
     }
 
-    // update transaction
+    /**
+     * Update a transaction
+     * @param id Transaction ID
+     * @param transactionDTO Data Transfer Object containing updated transaction data
+     * @return Updated BaseTransaction object
+     * @throws IllegalArgumentException if ID or transaction data is null, or if types mismatch
+     * @throws EntityNotFoundException if the transaction is not found
+     */
     public BaseTransaction updateTransaction(Long id, TransactionDTO transactionDTO) {
         if (id == null) {
             throw new IllegalArgumentException("Required field ID is missing for the transaction");
@@ -137,7 +215,7 @@ public class TransactionService {
 
         Optional<BaseTransaction> isTransaction = baseTransactionRepository.findById(id);
         if (isTransaction.isEmpty()) {
-            throw new EntityNotFoundException("Transaction not found");
+            throw new EntityNotFoundException("Transaction is not found");
         }
         BaseTransaction baseTransaction = isTransaction.get();
 
@@ -145,6 +223,7 @@ public class TransactionService {
             throw new IllegalArgumentException("Transaction type mismatch");
         }
 
+        baseTransaction.setCategory(transactionDTO.getCategory());
         baseTransaction.setTransactionDate(transactionDTO.getTransactionDate());
         baseTransaction.setAmount(transactionDTO.getAmount());
         baseTransaction.setDescription(transactionDTO.getDescription());
@@ -152,21 +231,12 @@ public class TransactionService {
         if (baseTransaction instanceof TransactionSingle transactionSingle) {
             transactionSingle.setOperationPlace(transactionDTO.getOperationPlace());
         } else if (baseTransaction instanceof TransactionDouble transactionDouble) {
-            if (transactionDTO.getReceiverUserCardNumber() != null) {
-                UserCard receiver = userCardRepository.findByCardNumber(transactionDTO.getReceiverUserCardNumber());
-                if (receiver == null) {
-                    throw new EntityNotFoundException("Receiver user card not found");
-                }
-                transactionDouble.setReceiverUserCardNumber(receiver.getCardNumber());
-            }
+            transactionDouble.setReceiverUserCardNumber(transactionDTO.getReceiverUserCardNumber());
+            transactionDouble.setSenderUserCardNumber(transactionDTO.getSenderUserCardNumber());
         }
 
         validateTransaction(baseTransaction);
 
         return baseTransactionRepository.save(baseTransaction);
     }
-
-
-
-
 }

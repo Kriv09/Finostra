@@ -1,4 +1,4 @@
-package com.example.finostra.Entity;
+package com.example.finostra.Entity.Transactions;
 
 import jakarta.persistence.Entity;
 
