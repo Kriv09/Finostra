@@ -2,15 +2,12 @@ package com.example.finostra.Controllers;
 
 import com.example.finostra.Entity.DTO.TransactionDTO;
 import com.example.finostra.Entity.Transactions.BaseTransaction;
-import com.example.finostra.Models.FinancialAnalyzer;
 import com.example.finostra.Services.TransactionService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,55 +25,41 @@ public class TransactionController {
     public ResponseEntity<List<TransactionDTO>> getTransactions() {
         List<TransactionDTO> transactions = transactionService.fetchTransactions()
                 .stream()
-                .map(transactionService::mapToDTO)
+                .map(BaseTransaction::mapToDTO)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(transactions);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TransactionDTO> getTransaction(@PathVariable Long id) {
+    public ResponseEntity<?> getTransaction(@PathVariable Long id) {
         try {
             BaseTransaction transaction = transactionService.fetchTransactionById(id);
-            return ResponseEntity.ok(transactionService.mapToDTO(transaction));
+            return ResponseEntity.ok(BaseTransaction.mapToDTO(transaction));
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
-    @GetMapping("/userCard_{id}")
-    public ResponseEntity<List<TransactionDTO>> getTransactionsByUserCardId(@PathVariable Long id) {
+    @GetMapping("/userCard/{id}")
+    public ResponseEntity<?> getTransactionsByUserCardId(@PathVariable Long id) {
         try {
             List<TransactionDTO> transactions = transactionService.fetchTransactionsByUserCardId(id)
                     .stream()
-                    .map(transactionService::mapToDTO)
+                    .map(BaseTransaction::mapToDTO)
                     .collect(Collectors.toList());
             return ResponseEntity.ok(transactions);
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-    }
-
-    @GetMapping("/analyse_userCard_{id}")
-    public ResponseEntity<FinancialAnalyzer> getFinancialAnalyzerForUser(@PathVariable Long id,
-                                                                         @RequestParam(required = false) LocalDateTime startDate,
-                                                                         @RequestParam(required = false) LocalDateTime endDate) {
-        try {
-            FinancialAnalyzer financialAnalyzer = transactionService.fetchFinancialAnalysisForUserCard(id, startDate, endDate);
-            return ResponseEntity.ok(financialAnalyzer);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
     @PostMapping
-    public ResponseEntity<String> addTransaction(@RequestBody TransactionDTO transactionDto) {
+    public ResponseEntity<?> addTransaction(@RequestBody TransactionDTO transactionDto) {
         try {
             transactionService.addTransaction(transactionDto);
-            return ResponseEntity.ok("Transaction added successfully");
+            return ResponseEntity.ok("Transaction is added successfully");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (EntityNotFoundException e) {
@@ -85,27 +68,26 @@ public class TransactionController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateTransaction(@PathVariable Long id, @RequestBody TransactionDTO transactionDto) {
+    public ResponseEntity<?> updateTransaction(@PathVariable Long id, @RequestBody TransactionDTO transactionDto) {
         try {
             transactionService.updateTransaction(id, transactionDto);
-            return ResponseEntity.ok("Transaction updated successfully");
+            return ResponseEntity.ok("Transaction is updated successfully");
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Transaction is not found: " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid transaction data: " + e.getMessage());
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteTransaction(@PathVariable Long id) {
+    public ResponseEntity<?> deleteTransaction(@PathVariable Long id) {
         try {
             transactionService.deleteTransactionById(id);
-            return ResponseEntity.ok("Transaction deleted successfully");
+            return ResponseEntity.ok("Transaction is deleted successfully");
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Transaction is not found: " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid transaction ID: " + e.getMessage());
         }
     }
-
 }

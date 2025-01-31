@@ -1,10 +1,21 @@
-package com.example.finostra.Models;
+package com.example.finostra.Entity;
+
+import com.example.finostra.Entity.DTO.TransactionDTO;
+import com.example.finostra.Entity.Transactions.BaseTransaction;
+import com.example.finostra.Entity.Transactions.TransactionCategory;
+import com.example.finostra.Entity.Transactions.TransactionDouble;
+import com.example.finostra.Entity.Transactions.TransactionSingle;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 import java.time.LocalDateTime;
 
 public class FinancialAnalyzer {
 
     private Integer totalTransactions;
+
+    @Enumerated(EnumType.STRING)
+    private TransactionCategory category;
 
     private Double balance;
 
@@ -18,18 +29,26 @@ public class FinancialAnalyzer {
     private Double averageIncome;
 
     public FinancialAnalyzer() {
-        this.totalTransactions = 0;
-        this.balance = 0.0;
+        this.totalTransactions = null;
+        this.balance = null;
         this.startDateTime = null;
         this.endDateTime = null;
-        this.totalExpenses = 0.0;
-        this.totalIncome = 0.0;
-        this.averageExpenses = 0.0;
-        this.averageIncome = 0.0;
+        this.totalExpenses = null;
+        this.totalIncome = null;
+        this.averageExpenses = null;
+        this.averageIncome = null;
+        this.category = null;
     }
 
-
     // Getters and Setters
+
+    public TransactionCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(TransactionCategory category) {
+        this.category = category;
+    }
 
     public Integer getTotalTransactions() {
         return totalTransactions;

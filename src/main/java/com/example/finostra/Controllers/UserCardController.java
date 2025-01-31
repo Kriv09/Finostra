@@ -26,64 +26,66 @@ public class UserCardController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserCard> getUserCard(@PathVariable Long id) {
+    public ResponseEntity<?> getUserCard(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(userCardService.fetchCardById(id));
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
-    @GetMapping("/user_{id}")
-    public ResponseEntity<List<UserCard>> getUserCardsByUserId(@PathVariable long id) {
-        try{
+    @GetMapping("/user/{id}")
+    public ResponseEntity<?> getUserCardsByUserId(@PathVariable long id) {
+        try {
             return ResponseEntity.ok(userCardService.fetchCardsByUserId(id));
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
     @PostMapping("/assign")
-    public  ResponseEntity<String> assignCardToUser(@RequestBody CardToUserDto cardToUserDto) {
+    public ResponseEntity<?> assignCardToUser(@RequestBody CardToUserDto cardToUserDto) {
         try {
-          userCardService.assignCardToUser(cardToUserDto);
-          return ResponseEntity.ok("Assigned card to user");
+            userCardService.assignCardToUser(cardToUserDto);
+            return ResponseEntity.ok("Card is assigned to user");
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
     @PostMapping
-    public ResponseEntity<String> addUserCard(@RequestBody CardToUserDto userCard) {
+    public ResponseEntity<?> addUserCard(@RequestBody CardToUserDto userCard) {
         try {
             userCardService.assignCardToUser(userCard);
-            return ResponseEntity.ok("User Card Added");
+            return ResponseEntity.ok("User Card is added");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateUserCard(@PathVariable Long id, @RequestBody UserCard newUserCard) {
+    public ResponseEntity<?> updateUserCard(@PathVariable Long id, @RequestBody UserCard newUserCard) {
         try {
             userCardService.updateCard(id, newUserCard);
-            return ResponseEntity.ok("User Card Updated");
+            return ResponseEntity.ok("User Card is updated");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUserCard(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUserCard(@PathVariable Long id) {
         try {
             userCardService.deleteCardById(id);
             return ResponseEntity.ok("User Card Deleted");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 }

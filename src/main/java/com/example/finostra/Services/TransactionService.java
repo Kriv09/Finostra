@@ -4,7 +4,7 @@ import com.example.finostra.Entity.Transactions.BaseTransaction;
 import com.example.finostra.Entity.Transactions.TransactionDouble;
 import com.example.finostra.Entity.Transactions.TransactionSingle;
 import com.example.finostra.Entity.UserCards.UserCard;
-import com.example.finostra.Models.FinancialAnalyzer;
+import com.example.finostra.Entity.FinancialAnalyzer;
 import com.example.finostra.Repositories.BaseTransactionRepository;
 import com.example.finostra.Repositories.UserCardRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -32,12 +32,22 @@ public class TransactionService {
      * @throws IllegalArgumentException if some values is null
      */
     private void validateTransaction(BaseTransaction transaction) {
-        if (transaction.getTransactionDate() == null ||
-                transaction.getAmount() == null ||
-                transaction.getDescription() == null ||
-                transaction.getTransactionType() == null) {
-            throw new IllegalArgumentException("Required fields are missing for the transaction");
+        if (transaction.getTransactionDate() == null) {
+            throw new IllegalArgumentException("Transaction date is required");
         }
+        if (transaction.getAmount() == null) {
+            throw new IllegalArgumentException("Transaction amount is required");
+        }
+        if (transaction.getDescription() == null) {
+            throw new IllegalArgumentException("Transaction description is required");
+        }
+        if (transaction.getTransactionType() == null) {
+            throw new IllegalArgumentException("Transaction type is required");
+        }
+        if (transaction.getCategory() == null) {
+            throw new IllegalArgumentException("Transaction category is required");
+        }
+
     }
 
     /**
@@ -57,6 +67,7 @@ public class TransactionService {
         transactionSingle.setAmount(transactionDTO.getAmount());
         transactionSingle.setDescription(transactionDTO.getDescription());
         transactionSingle.setTransactionType(transactionDTO.getTransactionType());
+        transactionSingle.setCategory(transactionDTO.getCategory());
         transactionSingle.setUserCard(userCard);
 
         transactionSingle.setOperationPlace(transactionDTO.getOperationPlace());
@@ -78,7 +89,7 @@ public class TransactionService {
 
         UserCard receiver = userCardRepository.findByCardNumber(transactionDTO.getReceiverUserCardNumber());
         if(receiver == null) {
-            throw new EntityNotFoundException("User card not found");
+            throw new EntityNotFoundException("User card is not found");
         }
 
         TransactionDouble transactionDouble = new TransactionDouble();
@@ -87,36 +98,13 @@ public class TransactionService {
         transactionDouble.setAmount(transactionDTO.getAmount());
         transactionDouble.setDescription(transactionDTO.getDescription());
         transactionDouble.setTransactionType(transactionDTO.getTransactionType());
+        transactionDouble.setCategory(transactionDTO.getCategory());
         transactionDouble.setUserCard(userCard);
 
         transactionDouble.setSenderUserCardNumber(userCard.getCardNumber());
         transactionDouble.setReceiverUserCardNumber(receiver.getCardNumber());
 
         return transactionDouble;
-    }
-
-    /**
-     * Map BaseTransaction object to TransactionDTO
-     * @param transaction BaseTransaction object to map
-     * @return TransactionDTO containing the mapped data
-     */
-    public TransactionDTO mapToDTO(BaseTransaction transaction) {
-        TransactionDTO dto = new TransactionDTO();
-        dto.setId(transaction.getId());
-        dto.setUserCardId(transaction.getUserCard().getId());
-        dto.setAmount(transaction.getAmount());
-        dto.setTransactionDate(transaction.getTransactionDate());
-        dto.setDescription(transaction.getDescription());
-        dto.setTransactionType(transaction.getTransactionType());
-
-        if (transaction instanceof TransactionDouble transactionDouble) {
-            dto.setSenderUserCardNumber(transactionDouble.getSenderUserCardNumber());
-            dto.setReceiverUserCardNumber(transactionDouble.getReceiverUserCardNumber());
-        } else if (transaction instanceof TransactionSingle single) {
-            dto.setOperationPlace(single.getOperationPlace());
-        }
-
-        return dto;
     }
 
     /**
@@ -136,7 +124,7 @@ public class TransactionService {
     public BaseTransaction fetchTransactionById(Long id) {
         Optional<BaseTransaction> transaction = baseTransactionRepository.findById(id);
         if (transaction.isEmpty()) {
-            throw new EntityNotFoundException("Transaction not found");
+            throw new EntityNotFoundException("Transaction is not found");
         }
         return transaction.get();
     }
@@ -155,7 +143,7 @@ public class TransactionService {
 
         Optional<UserCard> isUserCard = userCardRepository.findById(userCardId);
         if (isUserCard.isEmpty()) {
-            throw new EntityNotFoundException("User card not found");
+            throw new EntityNotFoundException("User card is not found");
         }
 
         return baseTransactionRepository.findBaseTransactionsByUserCard(isUserCard.get());
@@ -166,12 +154,12 @@ public class TransactionService {
      * @param transactionDTO Data Transfer Object containing transaction data
      * @return Saved BaseTransaction object
      * @throws EntityNotFoundException if the user card is not found
-     * @throws IllegalArgumentException if the transaction type is unsupported
+     * @throws IllegalArgumentException if the transaction type is unsupported or some required fields are missing
      */
     public BaseTransaction addTransaction(TransactionDTO transactionDTO) {
         Optional<UserCard> isUserCard = userCardRepository.findById(transactionDTO.getUserCardId());
         if (isUserCard.isEmpty()) {
-            throw new EntityNotFoundException("User card not found");
+            throw new EntityNotFoundException("User card is not found");
         }
         UserCard userCard = isUserCard.get();
 
@@ -185,7 +173,7 @@ public class TransactionService {
                 baseTransaction = createTransactionDouble(transactionDTO, userCard);
                 break;
             default:
-                throw new IllegalArgumentException("Transaction type not supported");
+                throw new IllegalArgumentException("Transaction type is not supported");
         }
 
         validateTransaction(baseTransaction);
@@ -205,7 +193,7 @@ public class TransactionService {
         }
         Optional<BaseTransaction> transaction = baseTransactionRepository.findById(id);
         if (transaction.isEmpty()) {
-            throw new EntityNotFoundException("Transaction not found");
+            throw new EntityNotFoundException("Transaction is not found");
         }
         baseTransactionRepository.delete(transaction.get());
     }
@@ -227,7 +215,7 @@ public class TransactionService {
 
         Optional<BaseTransaction> isTransaction = baseTransactionRepository.findById(id);
         if (isTransaction.isEmpty()) {
-            throw new EntityNotFoundException("Transaction not found");
+            throw new EntityNotFoundException("Transaction is not found");
         }
         BaseTransaction baseTransaction = isTransaction.get();
 
@@ -235,6 +223,7 @@ public class TransactionService {
             throw new IllegalArgumentException("Transaction type mismatch");
         }
 
+        baseTransaction.setCategory(transactionDTO.getCategory());
         baseTransaction.setTransactionDate(transactionDTO.getTransactionDate());
         baseTransaction.setAmount(transactionDTO.getAmount());
         baseTransaction.setDescription(transactionDTO.getDescription());
@@ -250,75 +239,4 @@ public class TransactionService {
 
         return baseTransactionRepository.save(baseTransaction);
     }
-
-    /**
-     * Analyse finance for user card
-     * @param userCardId ID of the user card
-     * @param startDate  the start of the date range for transactions (inclusive), can be null to include all earlier transactions
-     * @param endDate    the end of the date range for transactions (inclusive), can be null to include all later transactions
-     * @return FinancialAnalyzer object containing analysis results
-     */
-    public FinancialAnalyzer fetchFinancialAnalysisForUserCard(Long userCardId, LocalDateTime startDate, LocalDateTime endDate) {
-        List<BaseTransaction> transactions = fetchTransactionsByUserCardId(userCardId).stream()
-                .filter(transaction -> {
-                    LocalDateTime transactionDate = transaction.getTransactionDate();
-                    return (startDate == null || !transactionDate.isBefore(startDate)) &&
-                            (endDate == null || !transactionDate.isAfter(endDate));
-                })
-                .sorted(Comparator.comparing(BaseTransaction :: getTransactionDate))
-                .toList();
-
-        if(transactions.isEmpty()) {
-            return new FinancialAnalyzer();
-        }
-
-        double balance = 0, totalExpenses = 0, totalIncome = 0, averageExpenses = 0, averageIncome = 0;
-        int expenseCount = 0, incomeCount = 0;
-
-        for(BaseTransaction transaction : transactions) {
-            switch (transaction.getTransactionType()) {
-                case DEPOSIT:
-                    balance += transaction.getAmount();
-                    totalIncome += transaction.getAmount();
-                    incomeCount++;
-                    break;
-                case WITHDRAW, PAYMENT:
-                    balance -= transaction.getAmount();
-                    totalExpenses += transaction.getAmount();
-                    expenseCount++;
-                    break;
-                case TRANSFER:
-                    if (!(transaction instanceof TransactionDouble transactionDouble)) {
-                        throw new IllegalArgumentException("Transaction must be of type TransactionDouble");
-                    }
-
-                    if(transactionDouble.getReceiverUserCardNumber().equals(transaction.getUserCard().getCardNumber()) ) {
-                        balance += transactionDouble.getAmount();
-                        totalIncome += transactionDouble.getAmount();
-                        incomeCount++;
-                    } else {
-                        balance -= transactionDouble.getAmount();
-                        totalExpenses += transactionDouble.getAmount();
-                        expenseCount++;
-                    }
-                    break;
-            }
-        }
-
-        averageExpenses = expenseCount == 0 ? 0 : totalExpenses / expenseCount;
-        averageIncome = incomeCount == 0 ? 0 : totalIncome / incomeCount;
-
-        FinancialAnalyzer financialAnalyzer = new FinancialAnalyzer();
-        financialAnalyzer.setStartDateTime(startDate);
-        financialAnalyzer.setEndDateTime(endDate);
-        financialAnalyzer.setTotalTransactions(transactions.size());
-        financialAnalyzer.setBalance(balance);
-        financialAnalyzer.setTotalExpenses(totalExpenses);
-        financialAnalyzer.setTotalIncome(totalIncome);
-        financialAnalyzer.setAverageExpenses(averageExpenses);
-        financialAnalyzer.setAverageIncome(averageIncome);
-
-        return financialAnalyzer;
-    }
-
 }

@@ -1,5 +1,6 @@
 package com.example.finostra.Entity.DTO;
 
+import com.example.finostra.Entity.Transactions.TransactionCategory;
 import com.example.finostra.Entity.Transactions.TransactionType;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ public class TransactionDTO {
     private LocalDateTime transactionDate;
     private String description;
     private TransactionType transactionType;
+    private TransactionCategory category;
 
     // Transaction double row
     private String senderUserCardNumber;
@@ -27,6 +29,10 @@ public class TransactionDTO {
     public Long getId() {return id;}
 
     public void setId(Long id) {this.id = id;}
+
+    public TransactionCategory getCategory() { return category; }
+
+    public void setCategory(TransactionCategory category) { this.category = category; }
 
     public Long getUserCardId() {
         return userCardId;
@@ -63,6 +69,7 @@ public class TransactionDTO {
     }
 
     public void setTransactionType(TransactionType transactionType) {
+
         this.transactionType = transactionType;
     }
 
