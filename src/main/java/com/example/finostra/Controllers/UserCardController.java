@@ -4,6 +4,7 @@ import com.example.finostra.Entity.DTO.CardToUserDto;
 import com.example.finostra.Entity.UserCard;
 import com.example.finostra.Services.UserCardService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +46,7 @@ public class UserCardController {
     }
 
     @PostMapping("/assign")
+    @Transactional
     public  ResponseEntity<String> assignCardToUser(@RequestBody CardToUserDto cardToUserDto) {
         try {
           userCardService.assignCardToUser(cardToUserDto);
@@ -55,6 +57,7 @@ public class UserCardController {
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<String> addUserCard(@RequestBody CardToUserDto userCard) {
         try {
             userCardService.assignCardToUser(userCard);
@@ -65,6 +68,7 @@ public class UserCardController {
     }
 
     @PutMapping("/{id}")
+    @Transactional
     public ResponseEntity<String> updateUserCard(@PathVariable Long id, @RequestBody UserCard newUserCard) {
         try {
             userCardService.updateCard(id, newUserCard);
@@ -77,6 +81,7 @@ public class UserCardController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<String> deleteUserCard(@PathVariable Long id) {
         try {
             userCardService.deleteCardById(id);

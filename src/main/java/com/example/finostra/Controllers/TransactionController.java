@@ -4,6 +4,7 @@ import com.example.finostra.Entity.DTO.TransactionDTO;
 import com.example.finostra.Entity.BaseTransaction;
 import com.example.finostra.Services.TransactionService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +38,7 @@ public class TransactionController {
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<String> addTransaction(@RequestBody TransactionDTO transactionDto) {
         try {
             transactionService.addTransaction(transactionDto);
@@ -49,6 +51,7 @@ public class TransactionController {
     }
 
     @PutMapping("/{id}")
+    @Transactional
     public ResponseEntity<String> updateTransaction(@PathVariable Long id, @RequestBody TransactionDTO transactionDto) {
         try {
             transactionService.updateTransaction(id, transactionDto);
@@ -61,6 +64,7 @@ public class TransactionController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public ResponseEntity<String> deleteTransaction(@PathVariable Long id) {
         try {
             transactionService.deleteTransactionById(id);
