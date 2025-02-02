@@ -43,7 +43,7 @@ public class UserService {
     }
 
     public void assignRoleToUser(String username, String roleName) {
-        User user = userRepository.findByUsername(username);
+        User user = userRepository.findByUsername(username).get();
         if (user == null) {
             throw new IllegalArgumentException("User not found");
         }

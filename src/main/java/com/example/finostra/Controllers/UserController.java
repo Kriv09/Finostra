@@ -3,6 +3,7 @@ package com.example.finostra.Controllers;
 
 import com.example.finostra.Entity.DTO.UserRegistrationDto;
 import com.example.finostra.Services.UserService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ public class UserController {
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity<String> registerUser(@RequestBody UserRegistrationDto registrationDto) {
         userService.registerNewUser(registrationDto);
         return ResponseEntity.ok("User registered successfully");
