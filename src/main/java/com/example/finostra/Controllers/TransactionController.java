@@ -57,12 +57,8 @@ public class TransactionController {
     }
 
     @PostMapping
-<<<<<<< HEAD
     @Transactional
     public ResponseEntity<String> addTransaction(@RequestBody TransactionDTO transactionDto) {
-=======
-    public ResponseEntity<?> addTransaction(@RequestBody TransactionDTO transactionDto) {
->>>>>>> main
         try {
             transactionService.addTransaction(transactionDto);
             return ResponseEntity.ok("Transaction is added successfully");
@@ -74,12 +70,8 @@ public class TransactionController {
     }
 
     @PutMapping("/{id}")
-<<<<<<< HEAD
     @Transactional
     public ResponseEntity<String> updateTransaction(@PathVariable Long id, @RequestBody TransactionDTO transactionDto) {
-=======
-    public ResponseEntity<?> updateTransaction(@PathVariable Long id, @RequestBody TransactionDTO transactionDto) {
->>>>>>> main
         try {
             transactionService.updateTransaction(id, transactionDto);
             return ResponseEntity.ok("Transaction is updated successfully");
@@ -91,12 +83,8 @@ public class TransactionController {
     }
 
     @DeleteMapping("/{id}")
-<<<<<<< HEAD
     @Transactional
     public ResponseEntity<String> deleteTransaction(@PathVariable Long id) {
-=======
-    public ResponseEntity<?> deleteTransaction(@PathVariable Long id) {
->>>>>>> main
         try {
             transactionService.deleteTransactionById(id);
             return ResponseEntity.ok("Transaction is deleted successfully");
