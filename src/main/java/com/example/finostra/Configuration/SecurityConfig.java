@@ -25,8 +25,8 @@ public class SecurityConfig {
         http
                 .csrf().disable() // Disable CSRF for simplicity (only in development, not production)
                 .authorizeRequests()
-                .requestMatchers("/api/v1/**").authenticated() // Allow public access
-                .requestMatchers(HttpMethod.POST, "/api/v1/**").authenticated() // Secure POST requests
+                .requestMatchers(HttpMethod.POST, "/api/v1/**").authenticated()
+                .anyRequest().authenticated()
                 .and()
                 .httpBasic(); // Use basic authentication for demonstration
 
