@@ -3,6 +3,8 @@ package com.example.finostra.Services;
 import com.example.finostra.Entity.DTO.UserRegistrationDto;
 import com.example.finostra.Entity.Roles.Role;
 import com.example.finostra.Entity.User;
+import com.example.finostra.Exceptions.UserBadRequestException;
+import com.example.finostra.Exceptions.UserNotFoundException;
 import com.example.finostra.Repositories.RoleRepository;
 import com.example.finostra.Repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,7 +25,7 @@ public class UserService {
 
     public User registerNewUser(UserRegistrationDto registrationDto) {
         if (userRepository.findByUsername(registrationDto.getUsername()) != null) {
-            throw new IllegalArgumentException("User already exists");
+            throw new UserNotFoundException("User already exists");
         }
 
         User user = new User();
@@ -45,7 +47,7 @@ public class UserService {
     public void assignRoleToUser(String username, String roleName) {
         User user = userRepository.findByUsername(username).get();
         if (user == null) {
-            throw new IllegalArgumentException("User not found");
+            throw new UserBadRequestException("User not found");
         }
 
         Role role = roleRepository.findByName(roleName);
