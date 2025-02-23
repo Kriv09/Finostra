@@ -47,6 +47,20 @@ public class TransactionService {
             throw new TransactionBadRequestException("Transaction category is required");
         }
 
+        if (transaction instanceof TransactionSingle transactionSingle) {
+
+            if (transactionSingle.getOperationPlace() == null) {
+                throw new TransactionBadRequestException("Transaction operation place is required");
+            }
+        } else if (transaction instanceof TransactionDouble transactionDouble) {
+
+            if(transactionDouble.getSenderUserCardNumber() == null) {
+                throw new TransactionBadRequestException("Transaction sender card number is required");
+            } else if(transactionDouble.getReceiverUserCardNumber() == null) {
+                throw new TransactionBadRequestException("Transaction receiver card number is required");
+            }
+        }
+
     }
 
     private TransactionSingle createTransactionSingle(TransactionDTO transactionDTO, UserCard userCard) {
