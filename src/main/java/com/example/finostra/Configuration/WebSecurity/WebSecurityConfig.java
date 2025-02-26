@@ -1,5 +1,6 @@
-package com.example.finostra.Configuration;
+package com.example.finostra.Configuration.WebSecurity;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,23 +13,25 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-public class SecurityConfig {
+public class WebSecurityConfig {
 
     private final UserDetailsService userDetailsService;
 
-    public SecurityConfig(UserDetailsService userDetailsService) {
+    @Autowired
+    public WebSecurityConfig(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable() // Disable CSRF for simplicity (only in development, not production)
+                .csrf().disable()
                 .authorizeRequests()
-                .requestMatchers(HttpMethod.POST, "/api/v1/**").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/v1/user/phoneNumber/register").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/user/phoneNumber/verify").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .httpBasic(); // Use basic authentication for demonstration
+                .httpBasic();
 
         return http.build();
     }

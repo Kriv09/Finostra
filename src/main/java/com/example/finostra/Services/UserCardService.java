@@ -8,7 +8,6 @@ import com.example.finostra.Exceptions.UserCardNotFoundException;
 import com.example.finostra.Exceptions.UserNotFoundException;
 import com.example.finostra.Repositories.UserCardRepository;
 import com.example.finostra.Repositories.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -1,10 +1,9 @@
 package com.example.finostra.Services;
 
-import com.example.finostra.Entity.DTO.UserRegistrationDto;
+import com.example.finostra.Entity.Requests.Verification.UserPhoneNumberRegistrationRequest;
 import com.example.finostra.Entity.Roles.Role;
 import com.example.finostra.Entity.User;
 import com.example.finostra.Exceptions.UserBadRequestException;
-import com.example.finostra.Exceptions.UserNotFoundException;
 import com.example.finostra.Repositories.RoleRepository;
 import com.example.finostra.Repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,25 +22,9 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User registerNewUser(UserRegistrationDto registrationDto) {
-        if (userRepository.findByUsername(registrationDto.getUsername()) != null) {
-            throw new UserNotFoundException("User already exists");
-        }
-
-        User user = new User();
-        user.setUsername(registrationDto.getUsername());
-        user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
-        user.setEnabled(true);
-
-        Role userRole = roleRepository.findByName("ROLE_USER");
-        if (userRole == null) {
-            userRole = new Role();
-            userRole.setName("ROLE_USER");
-            roleRepository.save(userRole);
-        }
-
-        user.getRoles().add(userRole);
-        return userRepository.save(user);
+    public User registerNewUser(UserPhoneNumberRegistrationRequest registrationDto) {
+        // TODO : register New User
+        return null;
     }
 
     public void assignRoleToUser(String username, String roleName) {
