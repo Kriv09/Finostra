@@ -1,18 +1,18 @@
 package com.example.finostra.Entity.Transactions;
 
 import jakarta.persistence.Entity;
+import lombok.*;
 
 @Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+@Builder
 public class TransactionSingle extends BaseTransaction{
 
     private String operationPlace;
 
-    // Getters and Setters
-    public String getOperationPlace() {
-        return operationPlace;
-    }
-    public void setOperationPlace(String operationPlace) {
-        this.operationPlace = operationPlace;
-    }
 
 }

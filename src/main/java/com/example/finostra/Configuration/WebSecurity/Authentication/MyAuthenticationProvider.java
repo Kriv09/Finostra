@@ -1,4 +1,4 @@
-package com.example.finostra.Configuration.Authentication;
+package com.example.finostra.Configuration.WebSecurity.Authentication;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;

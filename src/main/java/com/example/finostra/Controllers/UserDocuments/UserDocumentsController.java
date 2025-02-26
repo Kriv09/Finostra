@@ -22,14 +22,7 @@ public class UserDocumentsController {
         if (file.isEmpty()) {
             return "File is empty!";
         }
-//            File tempFile = File.createTempFile("userdoc_", ".jpg");
-//            file.transferTo(tempFile);
-
-//            boolean isValid = UserDocsChecker.isValidDocument(tempFile);
-//
-//            if (!isValid) {
-//                return "Photo is not a document";
-//            }
+        // TODO: Check the image according to docs format
 
         return imgBBService.uploadImage(file);
         }

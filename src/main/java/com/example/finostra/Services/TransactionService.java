@@ -4,19 +4,15 @@ import com.example.finostra.Entity.Transactions.BaseTransaction;
 import com.example.finostra.Entity.Transactions.TransactionDouble;
 import com.example.finostra.Entity.Transactions.TransactionSingle;
 import com.example.finostra.Entity.UserCards.UserCard;
-import com.example.finostra.Entity.FinancialAnalyzer;
 import com.example.finostra.Exceptions.TransactionBadRequestException;
 import com.example.finostra.Exceptions.TransactionNotFoundException;
 import com.example.finostra.Exceptions.UserCardBadRequestException;
 import com.example.finostra.Exceptions.UserCardNotFoundException;
 import com.example.finostra.Repositories.BaseTransactionRepository;
 import com.example.finostra.Repositories.UserCardRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import com.example.finostra.Entity.DTO.TransactionDTO;
 
-import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 

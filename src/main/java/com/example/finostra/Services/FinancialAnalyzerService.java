@@ -1,6 +1,5 @@
 package com.example.finostra.Services;
 
-import com.example.finostra.Configuration.SecurityConfig;
 import com.example.finostra.Entity.FinancialAnalyzer;
 import com.example.finostra.Entity.Transactions.BaseTransaction;
 import com.example.finostra.Entity.Transactions.TransactionCategory;
