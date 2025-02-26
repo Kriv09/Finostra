@@ -24,13 +24,7 @@ public class FinancialAnalyzerController {
                                                                          @RequestParam(required = false) TransactionCategory category,
                                                                          @RequestParam(required = false) LocalDateTime startDate,
                                                                          @RequestParam(required = false) LocalDateTime endDate) {
-        try {
-            FinancialAnalyzer financialAnalyzer = financialAnalyzerService.getFinancialAnalyzerForUserCard(id, category, startDate, endDate);
-            return ResponseEntity.ok(financialAnalyzer);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        FinancialAnalyzer financialAnalyzer = financialAnalyzerService.getFinancialAnalyzerForUserCard(id, category, startDate, endDate);
+        return ResponseEntity.ok(financialAnalyzer);
     }
 }

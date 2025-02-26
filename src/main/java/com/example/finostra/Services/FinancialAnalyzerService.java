@@ -4,6 +4,7 @@ import com.example.finostra.Entity.FinancialAnalyzer;
 import com.example.finostra.Entity.Transactions.BaseTransaction;
 import com.example.finostra.Entity.Transactions.TransactionCategory;
 import com.example.finostra.Entity.Transactions.TransactionDouble;
+import com.example.finostra.Exceptions.TransactionBadRequestException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,14 +19,7 @@ public class FinancialAnalyzerService {
     public FinancialAnalyzerService(TransactionService transactionService) {
         this.transactionService = transactionService;
     }
-    /**
-     * Analyse finance for user card
-     * @param userCardId ID of the user card
-     * @param  transactionCategory category of transactions, can be null to include all category
-     * @param startDate  the start of the date range for transactions (inclusive), can be null to include all earlier transactions
-     * @param endDate    the end of the date range for transactions (inclusive), can be null to include all later transactions
-     * @return FinancialAnalyzer object containing analysis results
-     */
+
     public FinancialAnalyzer getFinancialAnalyzerForUserCard(Long userCardId, TransactionCategory transactionCategory, LocalDateTime startDate, LocalDateTime endDate) {
         List<BaseTransaction> transactions = transactionService.fetchTransactionsByUserCardId(userCardId).stream()
                 .filter(transaction -> {
@@ -59,7 +53,7 @@ public class FinancialAnalyzerService {
                     break;
                 case TRANSFER:
                     if (!(transaction instanceof TransactionDouble transactionDouble)) {
-                        throw new IllegalArgumentException("Transaction must be of type TransactionDouble");
+                        throw new TransactionBadRequestException("Transaction must be of type TransactionDouble");
                     }
 
                     if(transactionDouble.getReceiverUserCardNumber().equals(transaction.getUserCard().getCardNumber()) ) {
@@ -75,8 +69,18 @@ public class FinancialAnalyzerService {
             }
         }
 
-        averageExpenses = expenseCount == 0 ? 0 : totalExpenses / expenseCount;
-        averageIncome = incomeCount == 0 ? 0 : totalIncome / incomeCount;
+
+        if (expenseCount == 0) {
+            averageExpenses = 0;
+        } else {
+            averageExpenses = totalExpenses / expenseCount;
+        }
+        if (incomeCount == 0) {
+            averageIncome = 0;
+        } else {
+            averageIncome = totalIncome / incomeCount;
+        }
+
 
         FinancialAnalyzer financialAnalyzer = new FinancialAnalyzer();
         financialAnalyzer.setStartDateTime(startDate);
