@@ -8,7 +8,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="transaction")
+@Table(name="transaction_history")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Getter
 @Setter
@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @ToString
 @EqualsAndHashCode
-@Builder
 public abstract class BaseTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

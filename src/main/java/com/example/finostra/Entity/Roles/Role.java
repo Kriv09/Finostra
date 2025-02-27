@@ -12,6 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 @EqualsAndHashCode
 @ToString
 @Builder
+@Table(name = "role")
 public class Role implements GrantedAuthority {
 
     @Id
