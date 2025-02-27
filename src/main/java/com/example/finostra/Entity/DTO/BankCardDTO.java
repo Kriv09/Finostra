@@ -23,4 +23,7 @@ public class BankCardDTO {
     private LocalDate expiryDate;
 
     private String IBAN;
+
+    private Short CVV;
+
 }

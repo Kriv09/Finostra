@@ -8,12 +8,14 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 
 @Getter
-@Service
+@Setter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @EqualsAndHashCode
+@Entity
+@Table(name = "bank_card")
 public class BankCard {
 
     @Id
@@ -31,6 +33,9 @@ public class BankCard {
 
     @Column(nullable = false, unique = true, length = 34)
     private String IBAN;
+
+//    @Column(nullable = false, length = 3)
+//    private Short CVV;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
