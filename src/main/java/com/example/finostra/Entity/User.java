@@ -21,6 +21,7 @@ import java.util.Set;
 @ToString
 @Slf4j
 @Entity
+@Table(name = "users")
 public class User implements UserDetails {
 
     @Id

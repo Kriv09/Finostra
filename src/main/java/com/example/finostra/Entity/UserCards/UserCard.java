@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "user_card")
 public class UserCard {
 
     @Id
