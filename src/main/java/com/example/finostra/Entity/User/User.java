@@ -1,11 +1,10 @@
-package com.example.finostra.Entity;
+package com.example.finostra.Entity.User;
 
-import com.example.finostra.Entity.Roles.Role;
-import com.example.finostra.Entity.UserCards.UserCard;
-import com.example.finostra.Validation.PhoneNumber.ValidPhoneNumber;
+import com.example.finostra.Entity.User.Roles.Role;
+import com.example.finostra.Entity.User.UserCards.UserCard;
+import com.example.finostra.Entity.User.UserInfo.UserInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,7 +18,9 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
+@EqualsAndHashCode
 @Slf4j
+@Builder
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
@@ -30,9 +31,9 @@ public class User implements UserDetails {
 
     private String username;
     private String password;
-    private boolean enabled = true;
+    private boolean enabled;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -40,13 +41,14 @@ public class User implements UserDetails {
     )
     private Set<Role> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<UserCard> userCards = new HashSet<>();
 
 
-    @ValidPhoneNumber
-    private String phoneNumber;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private UserInfo userInfo;
 
 
 
@@ -80,6 +82,12 @@ public class User implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
+    }
+
+    @PrePersist
+    private void onCreate()
+    {
+        this.enabled = true;
     }
 
 

@@ -2,7 +2,6 @@ package com.example.finostra.Services.Sms;
 
 import com.example.finostra.Utils.VerificationCodeGenerator.VerificationCodeGenerator;
 import com.twilio.Twilio;
-import com.twilio.exception.ApiException;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import jakarta.annotation.PostConstruct;
@@ -44,14 +43,14 @@ public class SmsService {
     }
 
     public void sendConfirmationCode(String phoneNumber) {
-        String confirmationCode = verificationCodeGenerator.generate(LocalDate.now().toString() + phoneNumber);
+
+        String confirmationCode = verificationCodeGenerator.generatePhoneNumberVerificationCode(LocalDate.now().toString() + phoneNumber);
         String smsMessage = "Your confirmation code is: " + confirmationCode;
         Message.creator(
                 new PhoneNumber(phoneNumber),
                 new PhoneNumber(fromNumber),
                 smsMessage
         ).create();
-
 
 
         String redisKey = "confirmation:" + phoneNumber;

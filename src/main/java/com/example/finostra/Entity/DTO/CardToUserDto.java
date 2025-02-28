@@ -1,6 +1,6 @@
 package com.example.finostra.Entity.DTO;
 
-import com.example.finostra.Entity.UserCards.CardType;
+import com.example.finostra.Entity.User.UserCards.CardType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.*;

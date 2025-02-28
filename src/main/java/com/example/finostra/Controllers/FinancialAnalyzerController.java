@@ -1,10 +1,8 @@
 package com.example.finostra.Controllers;
 
-import com.example.finostra.Entity.FinancialAnalyzer;
+import com.example.finostra.Entity.Finances.FinancialAnalyzer;
 import com.example.finostra.Entity.Transactions.TransactionCategory;
-import com.example.finostra.Services.FinancialAnalyzerService;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.http.HttpStatus;
+import com.example.finostra.Services.FinanceAnalyzer.FinancialAnalyzerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

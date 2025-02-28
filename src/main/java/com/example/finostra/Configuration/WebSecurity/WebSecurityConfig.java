@@ -27,8 +27,7 @@ public class WebSecurityConfig {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .requestMatchers(HttpMethod.POST, "/api/v1/user/phoneNumber/register").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/v1/user/phoneNumber/verify").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/user/verification/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic();

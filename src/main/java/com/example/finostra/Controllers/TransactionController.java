@@ -2,7 +2,7 @@ package com.example.finostra.Controllers;
 
 import com.example.finostra.Entity.DTO.TransactionDTO;
 import com.example.finostra.Entity.Transactions.BaseTransaction;
-import com.example.finostra.Services.TransactionService;
+import com.example.finostra.Services.Transaction.TransactionService;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

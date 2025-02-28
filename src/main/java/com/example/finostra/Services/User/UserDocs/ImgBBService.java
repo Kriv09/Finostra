@@ -1,4 +1,4 @@
-package com.example.finostra.Services.UserDocs;
+package com.example.finostra.Services.User.UserDocs;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

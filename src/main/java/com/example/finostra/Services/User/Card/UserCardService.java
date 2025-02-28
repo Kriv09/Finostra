@@ -1,13 +1,13 @@
-package com.example.finostra.Services;
+package com.example.finostra.Services.User.Card;
 
 import com.example.finostra.Entity.DTO.CardToUserDto;
-import com.example.finostra.Entity.UserCards.UserCard;
-import com.example.finostra.Entity.User;
+import com.example.finostra.Entity.User.UserCards.UserCard;
+import com.example.finostra.Entity.User.User;
 import com.example.finostra.Exceptions.UserCardBadRequestException;
 import com.example.finostra.Exceptions.UserCardNotFoundException;
 import com.example.finostra.Exceptions.UserNotFoundException;
-import com.example.finostra.Repositories.UserCardRepository;
-import com.example.finostra.Repositories.UserRepository;
+import com.example.finostra.Repositories.User.Card.UserCardRepository;
+import com.example.finostra.Repositories.User.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -1,6 +1,6 @@
-package com.example.finostra.Entity.UserCards;
+package com.example.finostra.Entity.User.UserCards;
 
-import com.example.finostra.Entity.User;
+import com.example.finostra.Entity.User.User;
 import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,8 +18,8 @@ public class UserCard {
 
     private String cardNumber;
 
-    @Enumerated(EnumType.STRING) // Persist the enum as a String in the database
-    private CardType cardType; // Use CardType enum
+    @Enumerated(EnumType.STRING)
+    private CardType cardType;
 
     private LocalDate expirationDate;
 
@@ -27,7 +27,7 @@ public class UserCard {
 
     private Boolean active;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 

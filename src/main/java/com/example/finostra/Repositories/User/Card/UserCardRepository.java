@@ -1,7 +1,7 @@
-package com.example.finostra.Repositories;
+package com.example.finostra.Repositories.User.Card;
 
-import com.example.finostra.Entity.User;
-import com.example.finostra.Entity.UserCards.UserCard;
+import com.example.finostra.Entity.User.User;
+import com.example.finostra.Entity.User.UserCards.UserCard;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
