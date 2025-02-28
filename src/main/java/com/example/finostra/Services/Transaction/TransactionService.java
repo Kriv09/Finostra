@@ -1,15 +1,15 @@
-package com.example.finostra.Services;
+package com.example.finostra.Services.Transaction;
 
 import com.example.finostra.Entity.Transactions.BaseTransaction;
 import com.example.finostra.Entity.Transactions.TransactionDouble;
 import com.example.finostra.Entity.Transactions.TransactionSingle;
-import com.example.finostra.Entity.UserCards.UserCard;
+import com.example.finostra.Entity.User.UserCards.UserCard;
 import com.example.finostra.Exceptions.TransactionBadRequestException;
 import com.example.finostra.Exceptions.TransactionNotFoundException;
 import com.example.finostra.Exceptions.UserCardBadRequestException;
 import com.example.finostra.Exceptions.UserCardNotFoundException;
-import com.example.finostra.Repositories.BaseTransactionRepository;
-import com.example.finostra.Repositories.UserCardRepository;
+import com.example.finostra.Repositories.Transaction.BaseTransactionRepository;
+import com.example.finostra.Repositories.User.Card.UserCardRepository;
 import org.springframework.stereotype.Service;
 import com.example.finostra.Entity.DTO.TransactionDTO;
 

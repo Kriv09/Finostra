@@ -1,5 +1,4 @@
 package com.example.finostra.Validation.Email;
-import com.example.finostra.Validation.PhoneNumber.PhoneNumberValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -11,7 +10,7 @@ import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Documented
-@Constraint(validatedBy = PhoneNumberValidator.class)
+@Constraint(validatedBy = EmailValidator.class)
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
 @Retention(RUNTIME)
 public @interface ValidEmail {

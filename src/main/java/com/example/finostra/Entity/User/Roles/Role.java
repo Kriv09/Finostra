@@ -1,4 +1,4 @@
-package com.example.finostra.Entity.Roles;
+package com.example.finostra.Entity.User.Roles;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,6 +25,4 @@ public class Role implements GrantedAuthority {
     public String getAuthority() {
         return name;
     }
-
-
 }

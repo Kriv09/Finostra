@@ -1,8 +1,8 @@
 package com.example.finostra.Controllers;
 
 import com.example.finostra.Entity.DTO.CardToUserDto;
-import com.example.finostra.Entity.UserCards.UserCard;
-import com.example.finostra.Services.UserCardService;
+import com.example.finostra.Entity.User.UserCards.UserCard;
+import com.example.finostra.Services.User.Card.UserCardService;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

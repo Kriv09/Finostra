@@ -1,10 +1,11 @@
-package com.example.finostra.Services;
+package com.example.finostra.Services.FinanceAnalyzer;
 
-import com.example.finostra.Entity.FinancialAnalyzer;
+import com.example.finostra.Entity.Finances.FinancialAnalyzer;
 import com.example.finostra.Entity.Transactions.BaseTransaction;
 import com.example.finostra.Entity.Transactions.TransactionCategory;
 import com.example.finostra.Entity.Transactions.TransactionDouble;
 import com.example.finostra.Exceptions.TransactionBadRequestException;
+import com.example.finostra.Services.Transaction.TransactionService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

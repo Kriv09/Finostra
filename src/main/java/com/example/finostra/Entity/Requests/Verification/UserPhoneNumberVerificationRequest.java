@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 @EqualsAndHashCode
 @ToString
 @Slf4j
-public class VerificationRequest {
+public class UserPhoneNumberVerificationRequest {
     @ValidPhoneNumber
     private String phoneNumber;
     private String confirmationCode;

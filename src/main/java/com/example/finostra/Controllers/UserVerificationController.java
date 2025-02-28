@@ -1,11 +1,13 @@
 package com.example.finostra.Controllers;
 
 
+import com.example.finostra.Entity.Requests.Email.UserEmailVerificationRequest;
 import com.example.finostra.Entity.Requests.Email.UserEmailRegistrationRequest;
 import com.example.finostra.Entity.Requests.Verification.UserPhoneNumberRegistrationRequest;
-import com.example.finostra.Entity.Requests.Verification.VerificationRequest;
+import com.example.finostra.Entity.Requests.Verification.UserPhoneNumberVerificationRequest;
+import com.example.finostra.Services.EmailService.EmailService;
 import com.example.finostra.Services.Sms.SmsService;
-import com.example.finostra.Services.UserService;
+import com.example.finostra.Services.User.UserService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,20 +19,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/user")
-public class UserController {
+@RequestMapping("/api/v1/user/verification")
+public class UserVerificationController {
 
     private final UserService userService;
 
     private final SmsService smsService;
+    private final EmailService emailService;
 
 
     @Autowired
-    public UserController(UserService userService, SmsService smsService) {
+    public UserVerificationController(UserService userService, SmsService smsService, EmailService emailService) {
         this.userService = userService;
         this.smsService = smsService;
+        this.emailService = emailService;
     }
-
 
 
     @PostMapping("/phoneNumber/register")
@@ -46,28 +49,49 @@ public class UserController {
     @PostMapping("/phoneNumber/verify")
     @Transactional
     public ResponseEntity<String> verifyConfirmationCode(
-            @RequestBody @Valid  VerificationRequest request
+            @RequestBody @Valid UserPhoneNumberVerificationRequest request
     )
     {
         String storedCode = smsService.fetchConfirmationCode(request.getPhoneNumber());
         if (storedCode != null && storedCode.equals(request.getConfirmationCode())) {
             smsService.eraseConfirmationCachedCode(request.getConfirmationCode());
+            //TODO : UserInfo creation
             return ResponseEntity.ok("Phone number verified successfully");
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid or expired confirmation code");
     }
 
 
-
     @PostMapping("/email/register")
+    @Transactional
     public ResponseEntity<String> registerEmail(
             @RequestBody @Valid UserEmailRegistrationRequest request
     )
     {
-        // TODO : Complete verification & confirmation via email
+        emailService.sendEmailVerificationCode(request.getEmail());
 
         return ResponseEntity.ok("Confirmation code was sent successfully");
     }
+
+
+    @PostMapping("/email/verify")
+    @Transactional
+    public ResponseEntity<String> verifyEmail(
+            @RequestBody @Valid UserEmailVerificationRequest request
+    )
+    {
+        String storedCode = emailService.fetchConfirmationCode(request.getEmail());
+        if (storedCode != null && storedCode.equals(request.getConfirmationCode())) {
+            emailService.eraseConfirmationCachedCode(request.getConfirmationCode());
+            //TODO : UserInfo modification
+            return ResponseEntity.ok("Email verified successfully");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid or expired confirmation code");
+    }
+
+
+
+
 
 
 

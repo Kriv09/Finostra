@@ -1,6 +1,6 @@
-package com.example.finostra.Repositories;
+package com.example.finostra.Repositories.Role;
 
-import com.example.finostra.Entity.Roles.Role;
+import com.example.finostra.Entity.User.Roles.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RoleRepository extends JpaRepository<Role, Long> {
