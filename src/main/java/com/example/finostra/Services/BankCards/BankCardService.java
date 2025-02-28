@@ -1,6 +1,7 @@
 package com.example.finostra.Services.BankCards;
 
 import com.example.finostra.Entity.BankCards.BankCard;
+import com.example.finostra.Entity.BankCards.CVVCode;
 import com.example.finostra.Entity.Requests.BankCards.BankCardRequest;
 import com.example.finostra.Entity.User;
 import com.example.finostra.Exceptions.UserCardBadRequestException;
@@ -13,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class BankCardService {
@@ -22,6 +25,9 @@ public class BankCardService {
     private final BankCardRepository bankCardRepository;
     private final UserRepository userRepository;
     private final RedisTemplate<String, Object> redisTemplate;
+
+    private static final String CVV_KEY = "CardSecurityCode";
+    private static final long CVV_LIFETIME_MINUTES = 3;
 
     @Autowired
     public BankCardService(BankCardRepository bankCardRepository, UserRepository userRepository, RedisTemplate<String, Object> redisTemplate) {
@@ -96,6 +102,32 @@ public class BankCardService {
                 .build();
 
         bankCardRepository.save(bankCard);
+    }
+
+    public CVVCode fetchOrGenerateCVV(Long bankCardId) {
+        if(bankCardRepository.findById(bankCardId).isEmpty()) {
+            throw new UserCardNotFoundException("BankCard not found");
+        }
+
+        String redisKey = String.format("%s:%s", CVV_KEY, bankCardId.toString());
+        CVVCode cvvCode = (CVVCode) redisTemplate.opsForValue().get(redisKey);
+
+        if (cvvCode != null) {
+            Long newExpTimeInSec = redisTemplate.getExpire(redisKey);
+            cvvCode.setExpiryTimeInSeconds(newExpTimeInSec);
+            return cvvCode;
+        }
+
+        cvvCode = CVVCode.builder()
+                .bankCardId(bankCardId)
+                .cvv(BankCardUtils.generateCVV())
+                .expiryTimeInSeconds(CVV_LIFETIME_MINUTES)
+                .build();
+
+        redisTemplate.opsForValue().set(redisKey, cvvCode);
+        redisTemplate.expire(redisKey, CVV_LIFETIME_MINUTES, TimeUnit.MINUTES);
+
+        return cvvCode;
     }
 
 

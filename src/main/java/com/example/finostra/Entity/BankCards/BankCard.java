@@ -1,6 +1,7 @@
 package com.example.finostra.Entity.BankCards;
 
 import com.example.finostra.Entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,7 @@ public class BankCard {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
 }
