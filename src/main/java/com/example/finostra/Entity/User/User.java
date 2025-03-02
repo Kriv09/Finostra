@@ -13,8 +13,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
@@ -29,8 +27,6 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String username;
-    private String password;
     private boolean enabled;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -45,6 +41,8 @@ public class User implements UserDetails {
     @JsonIgnore
     private Set<UserCard> userCards = new HashSet<>();
 
+    private String username;
+    private String password;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
@@ -58,16 +56,10 @@ public class User implements UserDetails {
     }
 
     @Override
-    public String getUsername()
-    {
-        return username;
-    }
+    public String getUsername() { return userInfo.getUsername(); }
 
     @Override
-    public String getPassword()
-    {
-        return password;
-    }
+    public String getPassword() { return userInfo.getPassword(); }
 
     @Override
     public boolean isAccountNonExpired() {

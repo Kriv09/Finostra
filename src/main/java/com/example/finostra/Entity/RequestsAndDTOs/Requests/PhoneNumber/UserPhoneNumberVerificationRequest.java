@@ -1,4 +1,4 @@
-package com.example.finostra.Entity.Requests.Verification;
+package com.example.finostra.Entity.RequestsAndDTOs.Requests.PhoneNumber;
 
 
 import com.example.finostra.Validation.PhoneNumber.ValidPhoneNumber;
@@ -12,9 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 @EqualsAndHashCode
 @ToString
 @Slf4j
-public class UserPhoneNumberRegistrationRequest {
-
+public class UserPhoneNumberVerificationRequest {
     @ValidPhoneNumber
     private String phoneNumber;
-
+    private String confirmationCode;
 }

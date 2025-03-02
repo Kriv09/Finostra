@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ApiError> handleEntityNotFoundException(EntityNotFoundException e) {
 
-        var statusCode = HttpStatus.NOT_FOUND; // 404
+        var statusCode = HttpStatus.NOT_FOUND;
         String message = e.getMessage();
         Date timestamp = new Date();
 
@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiError> handleIllegalArgumentException(IllegalArgumentException e) {
 
-        var statusCode = HttpStatus.BAD_REQUEST; // 400
+        var statusCode = HttpStatus.BAD_REQUEST;
         String message = e.getMessage();
         Date timestamp = new Date();
 

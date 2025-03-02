@@ -1,4 +1,4 @@
-package com.example.finostra.Controllers;
+package com.example.finostra.Controllers.UserCard;
 
 import com.example.finostra.Entity.DTO.CardToUserDto;
 import com.example.finostra.Entity.User.UserCards.UserCard;
