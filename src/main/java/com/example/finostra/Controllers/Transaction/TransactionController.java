@@ -1,4 +1,4 @@
-package com.example.finostra.Controllers;
+package com.example.finostra.Controllers.Transaction;
 
 import com.example.finostra.Entity.DTO.TransactionDTO;
 import com.example.finostra.Entity.Transactions.BaseTransaction;

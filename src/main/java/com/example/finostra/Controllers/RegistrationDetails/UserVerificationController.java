@@ -1,12 +1,15 @@
-package com.example.finostra.Controllers;
+package com.example.finostra.Controllers.RegistrationDetails;
 
 
-import com.example.finostra.Entity.Requests.Email.UserEmailVerificationRequest;
-import com.example.finostra.Entity.Requests.Email.UserEmailRegistrationRequest;
-import com.example.finostra.Entity.Requests.Verification.UserPhoneNumberRegistrationRequest;
-import com.example.finostra.Entity.Requests.Verification.UserPhoneNumberVerificationRequest;
+import com.example.finostra.Entity.RequestsAndDTOs.Requests.Email.UserEmailRegistrationRequest;
+import com.example.finostra.Entity.RequestsAndDTOs.Requests.Email.UserEmailVerificationRequest;
+import com.example.finostra.Entity.RequestsAndDTOs.Requests.Password.UserPasswordRegistrationRequest;
+import com.example.finostra.Entity.RequestsAndDTOs.Requests.PhoneNumber.UserPhoneNumberRegistrationRequest;
+import com.example.finostra.Entity.RequestsAndDTOs.Requests.PhoneNumber.UserPhoneNumberVerificationRequest;
+import com.example.finostra.Entity.User.UserInfo.UserInfo;
 import com.example.finostra.Services.EmailService.EmailService;
 import com.example.finostra.Services.Sms.SmsService;
+import com.example.finostra.Services.User.UserInfo.UserInfoService;
 import com.example.finostra.Services.User.UserService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -26,13 +29,15 @@ public class UserVerificationController {
 
     private final SmsService smsService;
     private final EmailService emailService;
+    private final UserInfoService userInfoService;
 
 
     @Autowired
-    public UserVerificationController(UserService userService, SmsService smsService, EmailService emailService) {
+    public UserVerificationController(UserService userService, SmsService smsService, EmailService emailService, UserInfoService userInfoService) {
         this.userService = userService;
         this.smsService = smsService;
         this.emailService = emailService;
+        this.userInfoService = userInfoService;
     }
 
 
@@ -48,14 +53,21 @@ public class UserVerificationController {
 
     @PostMapping("/phoneNumber/verify")
     @Transactional
-    public ResponseEntity<String> verifyConfirmationCode(
+    public ResponseEntity<String> verifyPhoneNumber (
             @RequestBody @Valid UserPhoneNumberVerificationRequest request
     )
     {
         String storedCode = smsService.fetchConfirmationCode(request.getPhoneNumber());
         if (storedCode != null && storedCode.equals(request.getConfirmationCode())) {
             smsService.eraseConfirmationCachedCode(request.getConfirmationCode());
-            //TODO : UserInfo creation
+
+            UserInfo userInfo = UserInfo.builder()
+                            .phoneNumber(request.getPhoneNumber())
+                            .isPhoneNumberConfirmed(true)
+                            .build();
+
+            userInfoService.cacheUserInfo(userInfo);
+
             return ResponseEntity.ok("Phone number verified successfully");
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid or expired confirmation code");
@@ -64,29 +76,54 @@ public class UserVerificationController {
 
     @PostMapping("/email/register")
     @Transactional
-    public ResponseEntity<String> registerEmail(
+    public ResponseEntity<String> registerEmail (
             @RequestBody @Valid UserEmailRegistrationRequest request
     )
     {
         emailService.sendEmailVerificationCode(request.getEmail());
-
         return ResponseEntity.ok("Confirmation code was sent successfully");
     }
 
 
     @PostMapping("/email/verify")
     @Transactional
-    public ResponseEntity<String> verifyEmail(
+    public ResponseEntity<String> verifyEmail (
             @RequestBody @Valid UserEmailVerificationRequest request
     )
     {
         String storedCode = emailService.fetchConfirmationCode(request.getEmail());
         if (storedCode != null && storedCode.equals(request.getConfirmationCode())) {
             emailService.eraseConfirmationCachedCode(request.getConfirmationCode());
-            //TODO : UserInfo modification
+
+            userInfoService.updateUserInfoCache(
+                    UserInfo.builder()
+                            .email(request.getEmail())
+                            .isEmailConfirmed(true)
+                    .build()
+            );
+
+
             return ResponseEntity.ok("Email verified successfully");
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid or expired confirmation code");
+    }
+
+
+    @PostMapping("/password/set")
+    @Transactional
+    public ResponseEntity<String> registerPassword (
+            @RequestBody @Valid  UserPasswordRegistrationRequest request
+    )
+    {
+        userInfoService.updateUserInfoCache(
+                UserInfo.builder()
+                        .password(request.getPassword())
+                        .build()
+        );
+
+        userService.linkWithInfo();
+
+        return ResponseEntity.ok("Password accepted successfully");
     }
 
 

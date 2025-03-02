@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 
-@Entity
 @Slf4j
 @Getter
 @Setter
@@ -17,22 +16,25 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 @EqualsAndHashCode
+@Entity
 @Table(name = "user_info")
 public class UserInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int Id;
+    private Integer Id;
 
 
     @Column(unique = true)
     private String email;
-
     private boolean isEmailConfirmed;
+
+    private String phoneNumber;
     private boolean isPhoneNumberConfirmed;
 
-    @ValidPhoneNumber
-    private String phoneNumber;
+
+    private String username;
+    private String password;
 
     @Column(updatable = false)
     private LocalDate createdAt;

@@ -1,4 +1,4 @@
-package com.example.finostra.Controllers;
+package com.example.finostra.Controllers.FinanceAnalyzer;
 
 import com.example.finostra.Entity.Finances.FinancialAnalyzer;
 import com.example.finostra.Entity.Transactions.TransactionCategory;
